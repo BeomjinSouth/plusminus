@@ -213,6 +213,63 @@ textarea {
   animation: stone-cancel 0.64s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+.scene-preview-spark {
+  position: absolute;
+  height: 0.7rem;
+  width: 0.7rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.96), rgba(250, 204, 21, 0.4));
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.3);
+  animation: sparkle-float 3.2s ease-in-out infinite;
+}
+
+.scene-preview-scoreboard {
+  min-width: 9rem;
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.92), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(242, 236, 227, 0.92));
+  padding: 1rem 1.15rem;
+  box-shadow: 0 22px 40px rgba(19, 34, 56, 0.1);
+}
+
+.scene-preview-card {
+  position: absolute;
+  left: 1.6rem;
+  top: 5.25rem;
+  width: min(18rem, calc(100% - 8.5rem));
+  min-height: 12rem;
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 1.6rem;
+  padding: 1rem 1rem 1.1rem;
+  box-shadow: 0 24px 40px rgba(19, 34, 56, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.scene-preview-card--mystery {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94), transparent 34%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(235, 243, 249, 0.9));
+  animation: mystery-card 3.4s ease-in-out infinite;
+}
+
+.scene-preview-card--reward-in {
+  animation: reward-in-card 2.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.scene-preview-card--reward-out {
+  animation: reward-out-card 2.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.scene-preview-card--penalty-in {
+  animation: penalty-in-card 2.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.scene-preview-card--penalty-out {
+  animation: penalty-out-card 2.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 @keyframes rise-in {
   from {
     opacity: 0;
@@ -296,6 +353,88 @@ textarea {
   }
 }
 
+@keyframes sparkle-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes mystery-card {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+  50% {
+    transform: translate3d(20px, -12px, 0) rotate(3deg);
+  }
+}
+
+@keyframes reward-in-card {
+  0% {
+    transform: translate3d(-26px, 28px, 0) rotate(-12deg) scale(0.92);
+    opacity: 0.72;
+  }
+  55% {
+    transform: translate3d(120px, 54px, 0) rotate(-2deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(78px, 22px, 0) rotate(6deg) scale(0.97);
+    opacity: 0.92;
+  }
+}
+
+@keyframes reward-out-card {
+  0% {
+    transform: translate3d(116px, 52px, 0) rotate(3deg) scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: translate3d(-22px, 8px, 0) rotate(-10deg) scale(0.93);
+    opacity: 0.82;
+  }
+  100% {
+    transform: translate3d(18px, -12px, 0) rotate(-4deg) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+@keyframes penalty-in-card {
+  0% {
+    transform: translate3d(-20px, 18px, 0) rotate(10deg) scale(0.92);
+    opacity: 0.72;
+  }
+  58% {
+    transform: translate3d(118px, 64px, 0) rotate(2deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(72px, 30px, 0) rotate(-6deg) scale(0.95);
+    opacity: 0.92;
+  }
+}
+
+@keyframes penalty-out-card {
+  0% {
+    transform: translate3d(108px, 66px, 0) rotate(-4deg) scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: translate3d(-16px, 18px, 0) rotate(10deg) scale(0.93);
+    opacity: 0.82;
+  }
+  100% {
+    transform: translate3d(12px, -8px, 0) rotate(4deg) scale(0.88);
+    opacity: 0.68;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -306,7 +445,14 @@ textarea {
   .shake-soft,
   .stone-chip[data-animation="enter"],
   .stone-chip[data-animation="leave"],
-  .stone-chip[data-animation="cancel"] {
+  .stone-chip[data-animation="cancel"],
+  .scene-preview-spark,
+  .scene-preview-card,
+  .scene-preview-card--mystery,
+  .scene-preview-card--reward-in,
+  .scene-preview-card--reward-out,
+  .scene-preview-card--penalty-in,
+  .scene-preview-card--penalty-out {
     animation-duration: 1ms !important;
     animation-delay: 0ms !important;
   }

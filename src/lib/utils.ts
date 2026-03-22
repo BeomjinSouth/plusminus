@@ -20,7 +20,7 @@ export function formatModelLabel(model: ModelId) {
   return (
     {
       "counting-stones": "셈돌 모델",
-      postman: "우체부 모델",
+      postman: "카드 점수 미션",
       "rabbit-sign-parser": "토끼 부호-분해 모델",
     }[model] ?? model
   );
@@ -50,4 +50,3 @@ export function toStudentSummary(student: {
 export function makeSetId(model: ModelId, difficulty: Difficulty) {
   return `${model}-${difficulty}`;
 }
-

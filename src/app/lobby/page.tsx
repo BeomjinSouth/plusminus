@@ -38,7 +38,7 @@ export default function LobbyPage() {
           Lobby
         </p>
         <h1 className="mt-2 font-[var(--font-display)] text-4xl">
-          어떤 모델로 시작할까요?
+          어떤 방식으로 시작할까요?
         </h1>
         <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
           {toStudentSummary(session.student)}
@@ -85,4 +85,3 @@ export default function LobbyPage() {
     </AppFrame>
   );
 }
-
