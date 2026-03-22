@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 import { Button } from "@/components/common/button";
 import { FeedbackBanner } from "@/components/common/feedback-banner";
@@ -24,6 +31,15 @@ type CountingStonesChallengeProps = {
   onComplete: (result: ChallengeComplete) => void;
 };
 
+type StoneToken = {
+  id: number;
+  animation: "enter" | "leave" | "cancel";
+};
+
+const STONE_PREVIEW_LIMIT = 18;
+const STONE_EXIT_MS = 240;
+const STONE_CANCEL_MS = 640;
+
 export function CountingStonesChallenge({
   difficulty,
   problem,
@@ -37,8 +53,13 @@ export function CountingStonesChallenge({
   const [placedNegative, setPlacedNegative] = useState(0);
   const [boardPositive, setBoardPositive] = useState(0);
   const [boardNegative, setBoardNegative] = useState(0);
+  const [trayPositiveStones, setTrayPositiveStones] = useState<StoneToken[]>([]);
+  const [trayNegativeStones, setTrayNegativeStones] = useState<StoneToken[]>([]);
+  const [boardPositiveStones, setBoardPositiveStones] = useState<StoneToken[]>([]);
+  const [boardNegativeStones, setBoardNegativeStones] = useState<StoneToken[]>([]);
   const [cancelInput, setCancelInput] = useState("");
   const [resultInput, setResultInput] = useState("");
+  const [isAnimatingCancellation, setIsAnimatingCancellation] = useState(false);
   const [feedback, setFeedback] = useState<{
     tone: "info" | "success" | "warning";
     message: string;
@@ -52,6 +73,8 @@ export function CountingStonesChallenge({
   const [retryCount, setRetryCount] = useState(0);
   const attemptMapRef = useRef<Record<string, number>>({});
   const startedAtRef = useRef(Date.now());
+  const stoneIdRef = useRef(0);
+  const timeoutIdsRef = useRef<number[]>([]);
 
   const currentTerm = termValues[termIndex];
   const currentUnits =
@@ -61,42 +84,197 @@ export function CountingStonesChallenge({
     startedAtRef.current = Date.now();
   }, [phase, termIndex]);
 
+  useEffect(() => {
+    return () => {
+      timeoutIdsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    };
+  }, []);
+
   function nextAttempt(stepId: string) {
     const next = (attemptMapRef.current[stepId] ?? 0) + 1;
     attemptMapRef.current[stepId] = next;
     return next;
   }
 
+  function nextStoneId() {
+    stoneIdRef.current += 1;
+    return stoneIdRef.current;
+  }
+
+  function queueTimeout(callback: () => void, delay: number) {
+    const timeoutId = window.setTimeout(() => {
+      timeoutIdsRef.current = timeoutIdsRef.current.filter(
+        (activeTimeoutId) => activeTimeoutId !== timeoutId,
+      );
+      callback();
+    }, delay);
+
+    timeoutIdsRef.current.push(timeoutId);
+  }
+
+  function createStoneBatch(count: number): StoneToken[] {
+    return Array.from({ length: count }, () => ({
+      id: nextStoneId(),
+      animation: "enter",
+    }));
+  }
+
+  function clearStoneTokens(
+    stones: StoneToken[],
+    setStones: Dispatch<SetStateAction<StoneToken[]>>,
+  ) {
+    const removableIds = stones
+      .filter((stone) => stone.animation !== "leave")
+      .map((stone) => stone.id);
+
+    if (removableIds.length === 0) {
+      return;
+    }
+
+    const removableIdsSet = new Set(removableIds);
+
+    setStones((currentStones) =>
+      currentStones.map((stone) =>
+        removableIdsSet.has(stone.id)
+          ? { ...stone, animation: "leave" }
+          : stone,
+      ),
+    );
+
+    queueTimeout(() => {
+      setStones((currentStones) =>
+        currentStones.filter((stone) => !removableIdsSet.has(stone.id)),
+      );
+    }, STONE_EXIT_MS);
+  }
+
+  function addTrayStone(tone: "positive" | "negative") {
+    const newStone = createStoneBatch(1);
+
+    if (tone === "positive") {
+      setPlacedPositive((value) => value + 1);
+      setTrayPositiveStones((stones) => [...stones, ...newStone]);
+      return;
+    }
+
+    setPlacedNegative((value) => value + 1);
+    setTrayNegativeStones((stones) => [...stones, ...newStone]);
+  }
+
+  function removeTrayStone(tone: "positive" | "negative") {
+    if (tone === "positive") {
+      if (placedPositive === 0) {
+        return;
+      }
+
+      const targetStone = [...trayPositiveStones]
+        .reverse()
+        .find((stone) => stone.animation !== "leave");
+
+      setPlacedPositive((value) => Math.max(0, value - 1));
+
+      if (!targetStone) {
+        return;
+      }
+
+      setTrayPositiveStones((stones) =>
+        stones.map((stone) =>
+          stone.id === targetStone.id ? { ...stone, animation: "leave" } : stone,
+        ),
+      );
+
+      queueTimeout(() => {
+        setTrayPositiveStones((stones) =>
+          stones.filter((stone) => stone.id !== targetStone.id),
+        );
+      }, STONE_EXIT_MS);
+
+      return;
+    }
+
+    if (placedNegative === 0) {
+      return;
+    }
+
+    const targetStone = [...trayNegativeStones]
+      .reverse()
+      .find((stone) => stone.animation !== "leave");
+
+    setPlacedNegative((value) => Math.max(0, value - 1));
+
+    if (!targetStone) {
+      return;
+    }
+
+    setTrayNegativeStones((stones) =>
+      stones.map((stone) =>
+        stone.id === targetStone.id ? { ...stone, animation: "leave" } : stone,
+      ),
+    );
+
+    queueTimeout(() => {
+      setTrayNegativeStones((stones) =>
+        stones.filter((stone) => stone.id !== targetStone.id),
+      );
+    }, STONE_EXIT_MS);
+  }
+
   function renderStoneStack(
     label: string,
     count: number,
+    stones: StoneToken[],
     tone: "positive" | "negative",
+    options?: {
+      helperText?: string;
+      emptyText?: string;
+    },
   ) {
-    const previewCount = Math.min(count, 18);
+    const previewStones = stones.slice(-STONE_PREVIEW_LIMIT);
+    const visibleCount = previewStones.filter(
+      (stone) => stone.animation !== "leave",
+    ).length;
+    const hiddenCount = Math.max(0, count - visibleCount);
 
     return (
       <div className="rounded-3xl bg-white/75 p-4">
         <p className="text-sm font-semibold text-[var(--ink-soft)]">{label}</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {Array.from({ length: previewCount }).map((_, index) => (
-            <span
-              key={`${label}-${index}`}
-              className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
-                tone === "positive"
-                  ? "bg-sky-100 text-sky-900"
-                  : "bg-orange-100 text-orange-900"
-              }`}
-            >
-              {tone === "positive" ? "+" : "-"}
-            </span>
-          ))}
-          {count > previewCount && (
+        <div className="stone-stack mt-3 flex min-h-24 flex-wrap content-start gap-2">
+          {previewStones.length > 0 ? (
+            previewStones.map((stone, index) => (
+              <span
+                key={stone.id}
+                className={`stone-chip ${
+                  tone === "positive"
+                    ? "stone-chip-positive"
+                    : "stone-chip-negative"
+                }`}
+                data-animation={stone.animation}
+                style={
+                  {
+                    "--stone-delay": `${Math.min(index, 6) * 45}ms`,
+                  } as CSSProperties
+                }
+              >
+                {tone === "positive" ? "+" : "-"}
+              </span>
+            ))
+          ) : (
+            <p className="rounded-2xl border border-dashed border-[var(--line)] px-4 py-3 text-sm text-[var(--ink-soft)]/80">
+              {options?.emptyText ?? "아직 놓인 돌이 없습니다."}
+            </p>
+          )}
+          {hiddenCount > 0 && (
             <span className="inline-flex items-center rounded-full bg-stone-100 px-3 text-sm font-semibold text-stone-700">
-              +{count - previewCount}개
+              +{hiddenCount}개
             </span>
           )}
         </div>
         <p className="mt-3 text-sm text-[var(--ink-soft)]">현재 {count}개</p>
+        {options?.helperText && (
+          <p className="mt-1 text-xs leading-5 text-[var(--ink-soft)]/80">
+            {options.helperText}
+          </p>
+        )}
       </div>
     );
   }
@@ -132,6 +310,10 @@ export function CountingStonesChallenge({
 
     setBoardPositive((value) => value + placedPositive);
     setBoardNegative((value) => value + placedNegative);
+    setBoardPositiveStones((stones) => [...stones, ...createStoneBatch(placedPositive)]);
+    setBoardNegativeStones((stones) => [...stones, ...createStoneBatch(placedNegative)]);
+    clearStoneTokens(trayPositiveStones, setTrayPositiveStones);
+    clearStoneTokens(trayNegativeStones, setTrayNegativeStones);
     setPlacedPositive(0);
     setPlacedNegative(0);
 
@@ -178,13 +360,65 @@ export function CountingStonesChallenge({
       return;
     }
 
-    setBoardPositive((value) => value - expected);
-    setBoardNegative((value) => value - expected);
-    setPhase("result");
+    if (expected === 0) {
+      setPhase("result");
+      setFeedback({
+        tone: "success",
+        message: "0쌍입니다. 남은 돌의 뜻을 최종 값으로 적어 보세요.",
+      });
+      return;
+    }
+
+    const positiveIds = boardPositiveStones
+      .filter((stone) => stone.animation !== "leave")
+      .slice(-expected)
+      .map((stone) => stone.id);
+    const negativeIds = boardNegativeStones
+      .filter((stone) => stone.animation !== "leave")
+      .slice(-expected)
+      .map((stone) => stone.id);
+    const positiveIdsSet = new Set(positiveIds);
+    const negativeIdsSet = new Set(negativeIds);
+
+    setIsAnimatingCancellation(true);
+    setBoardPositiveStones((stones) =>
+      stones.map((stone) =>
+        positiveIdsSet.has(stone.id)
+          ? { ...stone, animation: "cancel" }
+          : stone,
+      ),
+    );
+    setBoardNegativeStones((stones) =>
+      stones.map((stone) =>
+        negativeIdsSet.has(stone.id)
+          ? { ...stone, animation: "cancel" }
+          : stone,
+      ),
+    );
     setFeedback({
       tone: "success",
-      message: "잘 찾았습니다. 이제 남은 돌 수를 유리수로 적어 보세요.",
+      message: "짝이 된 양돌과 음돌이 0이 되며 사라집니다. 남는 돌을 끝까지 보세요.",
     });
+
+    queueTimeout(() => {
+      setBoardPositiveStones((stones) =>
+        stones.filter((stone) => !positiveIdsSet.has(stone.id)),
+      );
+      setBoardNegativeStones((stones) =>
+        stones.filter((stone) => !negativeIdsSet.has(stone.id)),
+      );
+      setBoardPositive((value) => value - expected);
+      setBoardNegative((value) => value - expected);
+      setPhase("result");
+      setIsAnimatingCancellation(false);
+      setFeedback({
+        tone: "success",
+        message: "잘 찾았습니다. 이제 남은 돌 수를 유리수로 적어 보세요.",
+      });
+    }, STONE_CANCEL_MS);
+
+    setCancelInput("");
+    return;
   }
 
   async function submitResult() {
@@ -249,8 +483,14 @@ export function CountingStonesChallenge({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {renderStoneStack("양돌", boardPositive, "positive")}
-        {renderStoneStack("음돌", boardNegative, "negative")}
+        {renderStoneStack("양돌", boardPositive, boardPositiveStones, "positive", {
+          helperText: "보드 위 양의 돌입니다.",
+          emptyText: "아직 놓인 양돌이 없습니다.",
+        })}
+        {renderStoneStack("음돌", boardNegative, boardNegativeStones, "negative", {
+          helperText: "보드 위 음의 돌입니다.",
+          emptyText: "아직 놓인 음돌이 없습니다.",
+        })}
       </div>
 
       <FeedbackBanner tone={feedback.tone} message={feedback.message} />
@@ -269,32 +509,50 @@ export function CountingStonesChallenge({
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <Button
               tone="ghost"
-              onClick={() => setPlacedPositive((value) => value + 1)}
+              onClick={() => addTrayStone("positive")}
             >
               양돌 1개 놓기
             </Button>
             <Button
               tone="ghost"
-              onClick={() => setPlacedNegative((value) => value + 1)}
+              onClick={() => addTrayStone("negative")}
             >
               음돌 1개 놓기
             </Button>
             <Button
               tone="ghost"
-              onClick={() =>
-                setPlacedPositive((value) => Math.max(0, value - 1))
-              }
+              onClick={() => removeTrayStone("positive")}
             >
               양돌 1개 되돌리기
             </Button>
             <Button
               tone="ghost"
-              onClick={() =>
-                setPlacedNegative((value) => Math.max(0, value - 1))
-              }
+              onClick={() => removeTrayStone("negative")}
             >
               음돌 1개 되돌리기
             </Button>
+          </div>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            {renderStoneStack(
+              "준비한 양돌",
+              placedPositive,
+              trayPositiveStones,
+              "positive",
+              {
+                helperText: "현재 항에 쓸 양의 돌입니다.",
+                emptyText: "버튼으로 양돌을 추가해 보세요.",
+              },
+            )}
+            {renderStoneStack(
+              "준비한 음돌",
+              placedNegative,
+              trayNegativeStones,
+              "negative",
+              {
+                helperText: "현재 항에 쓸 음의 돌입니다.",
+                emptyText: "버튼으로 음돌을 추가해 보세요.",
+              },
+            )}
           </div>
           <div className="mt-5 rounded-3xl bg-stone-50 p-4 text-sm text-[var(--ink-soft)]">
             현재 배치: 양돌 {placedPositive}개 / 음돌 {placedNegative}개
@@ -317,8 +575,13 @@ export function CountingStonesChallenge({
             className="mt-5 w-full rounded-2xl border border-[var(--line)] bg-white px-4 py-3"
             inputMode="numeric"
             placeholder="예: 3"
+            disabled={isAnimatingCancellation}
           />
-          <Button className="mt-4" onClick={submitCancellation}>
+          <Button
+            className="mt-4"
+            onClick={submitCancellation}
+            disabled={isAnimatingCancellation}
+          >
             쌍 수 제출
           </Button>
         </div>
