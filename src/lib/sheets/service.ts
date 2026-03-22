@@ -53,7 +53,7 @@ const resultHeaders = [
 ];
 
 function getAppVersion() {
-  return process.env.APP_VERSION ?? "dev";
+  return process.env.APP_VERSION?.trim() || "dev";
 }
 
 export async function logSessionStart(input: {

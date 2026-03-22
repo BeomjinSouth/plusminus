@@ -31,7 +31,7 @@ function getAllowedOrigins(request: Request) {
     allowed.add(`http://${host}`);
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (appUrl) {
     const normalized = normalizeOrigin(appUrl);
     if (normalized) {
