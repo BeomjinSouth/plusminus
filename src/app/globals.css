@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --bg-paper: #f6efe2;
-  --bg-wash: #e9dfcf;
-  --ink-strong: #132238;
-  --ink-soft: #42556d;
-  --panel: rgba(255, 248, 238, 0.8);
-  --panel-strong: rgba(255, 252, 247, 0.95);
-  --line: rgba(19, 34, 56, 0.12);
-  --line-strong: rgba(19, 34, 56, 0.26);
-  --sun: #ef7c25;
-  --sea: #0f766e;
-  --berry: #b9382f;
-  --gold: #f4b534;
-  --shadow: 0 18px 48px rgba(43, 35, 24, 0.12);
+  --bg-paper: #f7f1e8;
+  --bg-wash: #ece5d8;
+  --ink-strong: #152536;
+  --ink-soft: #4b6078;
+  --panel: rgba(255, 250, 244, 0.8);
+  --panel-strong: rgba(255, 252, 247, 0.94);
+  --line: rgba(21, 37, 54, 0.1);
+  --line-strong: rgba(21, 37, 54, 0.22);
+  --sun: #d9772c;
+  --sea: #2f7c79;
+  --berry: #b55243;
+  --gold: #e7b258;
+  --shadow: 0 24px 60px rgba(33, 31, 26, 0.1);
 }
 
 * {
@@ -28,10 +28,12 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(244, 181, 52, 0.24), transparent 32%),
-    radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 28%),
+    radial-gradient(circle at 0% 10%, rgba(231, 178, 88, 0.18), transparent 28%),
+    radial-gradient(circle at 100% 0%, rgba(47, 124, 121, 0.12), transparent 26%),
+    radial-gradient(circle at 50% 100%, rgba(181, 82, 67, 0.08), transparent 32%),
     linear-gradient(180deg, var(--bg-paper), var(--bg-wash));
   color: var(--ink-strong);
+  letter-spacing: -0.01em;
 }
 
 body::before {
@@ -40,10 +42,24 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(19, 34, 56, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(19, 34, 56, 0.03) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 92%);
+    linear-gradient(rgba(21, 37, 54, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21, 37, 54, 0.02) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.42), transparent 90%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  right: 6%;
+  bottom: 8%;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 999px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.42), transparent 68%);
+  filter: blur(14px);
+  opacity: 0.55;
 }
 
 a {
@@ -52,7 +68,9 @@ a {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -63,19 +81,68 @@ input {
 
 .panel {
   border: 1px solid var(--line);
-  background: var(--panel);
-  backdrop-filter: blur(14px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 251, 245, 0.84),
+    rgba(255, 248, 241, 0.74)
+  );
+  backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
 }
 
 .panel-strong {
   border: 1px solid var(--line-strong);
-  background: var(--panel-strong);
-  box-shadow: var(--shadow);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 253, 249, 0.96),
+    rgba(255, 250, 244, 0.9)
+  );
+  box-shadow: 0 30px 80px rgba(33, 31, 26, 0.12);
 }
 
 .section-title {
   letter-spacing: 0.02em;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.field-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.field {
+  min-height: 3.6rem;
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0 1rem;
+  color: var(--ink-strong);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.field::placeholder {
+  color: rgba(75, 96, 120, 0.62);
+}
+
+.field:hover {
+  border-color: var(--line-strong);
+}
+
+.field:focus {
+  outline: none;
+  border-color: rgba(47, 124, 121, 0.55);
+  box-shadow: 0 0 0 4px rgba(47, 124, 121, 0.12);
 }
 
 .rise-in {
@@ -88,6 +155,62 @@ input {
 
 .shake-soft {
   animation: shake-soft 0.28s ease-in-out;
+}
+
+.stone-chip {
+  position: relative;
+  display: inline-flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 800;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 10px 18px rgba(19, 34, 56, 0.14);
+}
+
+.stone-chip::after {
+  content: "";
+  position: absolute;
+  inset: 0.3rem auto auto 0.45rem;
+  height: 0.7rem;
+  width: 1rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.32);
+  filter: blur(0.5px);
+}
+
+.stone-chip-positive {
+  border-color: rgba(56, 189, 248, 0.34);
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.9), transparent 24%),
+    linear-gradient(160deg, #ecfeff, #7dd3fc);
+  color: #0c4a6e;
+}
+
+.stone-chip-negative {
+  border-color: rgba(251, 146, 60, 0.34);
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.84), transparent 24%),
+    linear-gradient(160deg, #ffedd5, #fb923c);
+  color: #7c2d12;
+}
+
+.stone-chip[data-animation="enter"] {
+  animation: stone-enter 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--stone-delay, 0ms);
+}
+
+.stone-chip[data-animation="leave"] {
+  animation: stone-leave 0.22s ease-in both;
+}
+
+.stone-chip[data-animation="cancel"] {
+  animation: stone-cancel 0.64s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 @keyframes rise-in {
@@ -126,3 +249,65 @@ input {
   }
 }
 
+@keyframes stone-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.72);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stone-leave {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.45);
+  }
+}
+
+@keyframes stone-cancel {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: saturate(1);
+  }
+  35% {
+    transform: translateY(-6px) scale(1.08);
+    filter: saturate(1.25);
+  }
+  72% {
+    opacity: 0.85;
+    transform: translateY(4px) scale(0.72);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.18);
+    filter: saturate(0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .rise-in,
+  .pulse-good,
+  .shake-soft,
+  .stone-chip[data-animation="enter"],
+  .stone-chip[data-animation="leave"],
+  .stone-chip[data-animation="cancel"] {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+}

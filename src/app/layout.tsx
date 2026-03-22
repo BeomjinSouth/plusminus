@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Do_Hyeon, IBM_Plex_Sans_KR } from "next/font/google";
+import { IBM_Plex_Sans_KR, Noto_Serif_KR } from "next/font/google";
 
 import "./globals.css";
 
-const displayFont = Do_Hyeon({
+const displayFont = Noto_Serif_KR({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["500", "700"],
   variable: "--font-display",
 });
 
@@ -18,7 +18,7 @@ const bodyFont = IBM_Plex_Sans_KR({
 export const metadata: Metadata = {
   title: "PlusMinus Lab",
   description:
-    "유리수의 덧셈과 뺄셈을 셈돌, 우체부, 토끼 모델로 학습하는 게이미피케이션 웹앱",
+    "유리수의 덧셈과 뺄셈을 셈돌, 카드 점수 미션, 토끼 모델로 학습하는 수업용 웹앱",
 };
 
 export default function RootLayout({
@@ -36,4 +36,3 @@ export default function RootLayout({
     </html>
   );
 }
-
