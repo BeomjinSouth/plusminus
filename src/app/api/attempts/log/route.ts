@@ -34,6 +34,7 @@ export async function POST(request: Request) {
       {
         ok: false,
         error: "Invalid request body",
+        issues: parsed.error.flatten(),
       },
       { status: 400 },
     );
