@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { AppFrame } from "@/components/layout/app-frame";
-import { modelInsights } from "@/lib/model-content";
 
 const learningSteps = [
   "학교, 학년, 반, 번호를 입력해 세션을 시작합니다.",
@@ -66,12 +65,6 @@ export default function HomePage() {
             >
               학생 입장하기
             </Link>
-            <a
-              href="#models"
-              className="rounded-full border border-[var(--line-strong)] bg-white/75 px-6 py-3 text-sm font-semibold text-[var(--ink-strong)] transition hover:border-[var(--sea)] hover:text-[var(--sea)] md:text-base"
-            >
-              풀이 방식 보기
-            </a>
           </div>
         </div>
 
@@ -113,39 +106,6 @@ export default function HomePage() {
             </ul>
           </div>
         </div>
-      </section>
-
-      <section id="models" className="mt-8 grid gap-4 lg:grid-cols-3">
-        {modelInsights.map((model, index) => (
-          <article
-            key={model.id}
-            className="panel rise-in rounded-[2rem] p-6"
-            style={{ animationDelay: `${index * 80}ms` }}
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                {model.badge}
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-soft)]">
-                {model.shortName}
-              </span>
-            </div>
-            <h2 className="font-[var(--font-display)] text-[1.9rem] leading-tight tracking-[-0.03em]">
-              {model.title}
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
-              {model.meaning}
-            </p>
-            <div className="mt-5 border-t border-[var(--line)] pt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sea)]">
-                이럴 때 좋습니다
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
-                {model.bestUse}
-              </p>
-            </div>
-          </article>
-        ))}
       </section>
     </AppFrame>
   );
