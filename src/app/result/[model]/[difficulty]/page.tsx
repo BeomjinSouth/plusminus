@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { StatPill } from "@/components/common/stat-pill";
 import { AppFrame } from "@/components/layout/app-frame";
+import { difficultyMissionLabels, getModelInsight } from "@/lib/model-content";
 import { loadLatestResult, loadSessionState } from "@/lib/storage";
 import type { SessionState, SetResult } from "@/lib/types";
 import {
@@ -34,22 +35,43 @@ export default function ResultPage() {
     );
   }
 
+  const modelInsight = getModelInsight(result.model);
+
   return (
     <AppFrame>
-      <section className="panel rounded-[2rem] px-6 py-8 md:px-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sea)]">
-          Result
-        </p>
-        <h1 className="mt-2 font-[var(--font-display)] text-5xl leading-none">
-          세트 완료
-        </h1>
-        <p className="mt-4 text-sm leading-6 text-[var(--ink-soft)]">
-          {toStudentSummary(session.student)}
-        </p>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
-          {formatModelLabel(result.model)} · {formatDifficultyLabel(result.difficulty)} 세트가
-          기록되었습니다.
-        </p>
+      <section className={`panel-strong overflow-hidden rounded-[2.3rem] px-6 py-8 md:px-8 ${modelInsight.accentClass}`}>
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div className="max-w-3xl">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-white/70 bg-white/82 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sea)]">
+                Mission Complete
+              </span>
+              <span className="rounded-full bg-[var(--ink-strong)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                {difficultyMissionLabels[result.difficulty]}
+              </span>
+            </div>
+            <h1 className="mt-4 font-[var(--font-display)] text-[2.7rem] leading-[1.02] tracking-[-0.05em] md:text-[4.4rem]">
+              세트 완료
+            </h1>
+            <p className="mt-4 text-sm leading-7 text-[var(--ink-soft)] md:text-base">
+              {toStudentSummary(session.student)}
+            </p>
+            <p className="mt-2 text-sm leading-7 text-[var(--ink-soft)] md:text-base">
+              {formatModelLabel(result.model)} · {formatDifficultyLabel(result.difficulty)} 세트가
+              기록되었습니다.
+            </p>
+          </div>
+
+          <div className="rounded-[1.8rem] bg-[var(--ink-strong)] px-5 py-5 text-white shadow-[0_24px_42px_rgba(19,34,56,0.16)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/65">
+              완료한 미션
+            </p>
+            <p className="mt-2 font-[var(--font-display)] text-[2rem] leading-none">
+              {modelInsight.missionLabel}
+            </p>
+            <p className="mt-3 text-sm text-white/80">{modelInsight.rewardLabel}</p>
+          </div>
+        </div>
       </section>
 
       <section className="mt-6 grid gap-4 md:grid-cols-3">
@@ -61,13 +83,13 @@ export default function ResultPage() {
       <section className="mt-6 flex flex-wrap gap-3">
         <Link
           href={`/play/${params.model}/${params.difficulty}`}
-          className="rounded-full bg-[var(--sun)] px-6 py-3 text-sm font-semibold text-white"
+          className="rounded-full bg-[var(--sun)] px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(217,119,44,0.22)]"
         >
           같은 세트 다시 하기
         </Link>
         <Link
           href="/lobby"
-          className="rounded-full border border-[var(--line-strong)] px-6 py-3 text-sm font-semibold text-[var(--ink-strong)]"
+          className="rounded-full border border-[var(--line-strong)] bg-white/84 px-6 py-3 text-sm font-semibold text-[var(--ink-strong)]"
         >
           다른 모델 선택하기
         </Link>

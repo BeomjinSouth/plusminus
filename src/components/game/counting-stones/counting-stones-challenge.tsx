@@ -39,6 +39,11 @@ type StoneToken = {
 const STONE_PREVIEW_LIMIT = 18;
 const STONE_EXIT_MS = 240;
 const STONE_CANCEL_MS = 640;
+const phaseLabels = {
+  place: "돌 놓기",
+  cancel: "0쌍 찾기",
+  result: "최종 값",
+} as const;
 
 export function CountingStonesChallenge({
   difficulty,
@@ -466,19 +471,40 @@ export function CountingStonesChallenge({
 
   return (
     <div className="grid gap-5">
-      <div className="rounded-[2rem] bg-white/70 p-5">
+      <div className="panel-strong rounded-[2rem] p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sea)]">
-              셈돌 보드
+              셈돌 보드 미션
             </p>
             <h2 className="mt-1 font-[var(--font-display)] text-3xl">
               {problem.expression}
             </h2>
+            <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+              이번 단계에서는 항 하나를 돌로 바꾸고, 마지막에 서로 사라지는 0쌍을 확인합니다.
+            </p>
           </div>
           <div className="rounded-2xl bg-[var(--ink-strong)] px-4 py-3 text-sm text-white">
             돌 1개 = {stoneValue}
           </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {Object.entries(phaseLabels).map(([key, label]) => {
+            const isActive = phase === key;
+
+            return (
+              <span
+                key={key}
+                className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                  isActive
+                    ? "border-[var(--sea)] bg-[var(--sea)] text-white"
+                    : "border-[var(--line)] bg-white/80 text-[var(--ink-soft)]"
+                }`}
+              >
+                {label}
+              </span>
+            );
+          })}
         </div>
       </div>
 
@@ -503,9 +529,32 @@ export function CountingStonesChallenge({
           <h3 className="mt-2 font-[var(--font-display)] text-3xl">
             {problem.terms[termIndex]}
           </h3>
-          <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
-            필요한 돌 수를 맞춘 뒤 제출하세요. 양수는 양돌, 음수는 음돌을 놓으면 됩니다.
-          </p>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-[1.4rem] border border-[var(--line)] bg-white/82 px-4 py-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                이번 항 목표
+              </p>
+              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
+                {currentUnits}개 놓기
+              </p>
+            </div>
+            <div className="rounded-[1.4rem] border border-[var(--line)] bg-white/82 px-4 py-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                돌 종류
+              </p>
+              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
+                {currentTerm.numerator > 0 ? "양돌만 사용" : "음돌만 사용"}
+              </p>
+            </div>
+            <div className="rounded-[1.4rem] border border-[var(--line)] bg-white/82 px-4 py-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                성공 조건
+              </p>
+              <p className="mt-2 text-sm font-semibold leading-6 text-[var(--ink-strong)]">
+                다른 색 돌 없이 정확히 맞추기
+              </p>
+            </div>
+          </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <Button
               tone="ghost"

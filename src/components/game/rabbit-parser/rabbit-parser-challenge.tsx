@@ -30,6 +30,14 @@ type RabbitParserChallengeProps = {
   onComplete: (result: ChallengeComplete) => void;
 };
 
+const phaseOrder = [
+  { key: "split", label: "1. 끊기" },
+  { key: "normalize", label: "2. 부호 정리" },
+  { key: "start", label: "3. 시작 위치" },
+  { key: "move", label: "4. 토끼 이동" },
+  { key: "result", label: "5. 최종 값" },
+] as const;
+
 export function RabbitParserChallenge({
   difficulty,
   problem,
@@ -332,13 +340,34 @@ export function RabbitParserChallenge({
 
   return (
     <div className="grid gap-5">
-      <div className="rounded-[2rem] bg-white/75 p-5">
+      <div className="panel-strong rounded-[2rem] p-5">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sun)]">
           토끼 부호-분해 미션
         </p>
         <h2 className="mt-1 font-[var(--font-display)] text-3xl">
           {problem.expression}
         </h2>
+        <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+          항을 끊고, 부호를 읽고, 마지막에 수직선에서 토끼를 정확히 이동시키는 단계형 미션입니다.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {phaseOrder.map((item) => {
+            const isActive = item.key === phase;
+
+            return (
+              <span
+                key={item.key}
+                className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                  isActive
+                    ? "border-[var(--sun)] bg-[var(--sun)] text-white"
+                    : "border-[var(--line)] bg-white/82 text-[var(--ink-soft)]"
+                }`}
+              >
+                {item.label}
+              </span>
+            );
+          })}
+        </div>
       </div>
 
       <FeedbackBanner tone={feedback.tone} message={feedback.message} />
