@@ -19,8 +19,9 @@ describe("problem bank", () => {
     const expressions = allProblems.map((problem) => problem.expression);
 
     expect(expressions).toContain("-(+3)-(-5)+7");
-    expect(expressions).toContain("(+2/3)-(-5/6)-(+1/2)");
-    expect(expressions).toContain("(+2.4)-(-1.1)-(+0.5)");
+    expect(expressions).toContain("2/3-(-5/6)-(+1/2)");
+    expect(expressions).toContain("2.4-(-1.1)-(+0.5)");
+    expect(expressions).toContain("-4+(-3)");
   });
 
   it("provides rawSplit for high-difficulty rabbit parsing cases", () => {

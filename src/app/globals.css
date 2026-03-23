@@ -159,6 +159,14 @@ textarea {
   animation: shake-soft 0.28s ease-in-out;
 }
 
+.rabbit-hop {
+  animation: rabbit-hop 0.54s cubic-bezier(0.22, 0.84, 0.28, 1);
+}
+
+.rabbit-float {
+  animation: rabbit-float 1.8s ease-in-out infinite;
+}
+
 .stone-chip {
   position: relative;
   display: inline-flex;
@@ -308,6 +316,31 @@ textarea {
   }
 }
 
+@keyframes rabbit-hop {
+  0% {
+    transform: translateY(8px) scale(0.94);
+  }
+  38% {
+    transform: translateY(-10px) scale(1.02);
+  }
+  72% {
+    transform: translateY(2px) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes rabbit-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
 @keyframes stone-enter {
   0% {
     opacity: 0;
@@ -445,6 +478,8 @@ textarea {
   .rise-in,
   .pulse-good,
   .shake-soft,
+  .rabbit-hop,
+  .rabbit-float,
   .stone-chip[data-animation="enter"],
   .stone-chip[data-animation="leave"],
   .stone-chip[data-animation="cancel"],

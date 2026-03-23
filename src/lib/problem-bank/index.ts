@@ -1,7 +1,7 @@
 import rawProblemBank from "../../../problem-bank.json";
 
 import { normalizeMathText } from "@/lib/rational";
-import { splitExpressionIntoTerms } from "@/lib/expression";
+import { splitExpressionIntoTerms, unwrapLeadingSimpleTerm } from "@/lib/expression";
 import type { Difficulty, Problem, ProblemRecord } from "@/lib/types";
 
 const problemBankRecord = rawProblemBank as Record<Difficulty, ProblemRecord[]>;
@@ -9,7 +9,7 @@ const problemBankRecord = rawProblemBank as Record<Difficulty, ProblemRecord[]>;
 function normalizeProblemRecord(record: ProblemRecord): Problem {
   return {
     id: record.id,
-    expression: normalizeMathText(record.expression),
+    expression: unwrapLeadingSimpleTerm(record.expression),
     rawSplit:
       record.raw_split?.map((segment) => normalizeMathText(segment)) ??
       splitExpressionIntoTerms(record.expression),
@@ -29,4 +29,3 @@ function normalizeProblemRecord(record: ProblemRecord): Problem {
 export function getProblemsByDifficulty(difficulty: Difficulty) {
   return problemBankRecord[difficulty].map(normalizeProblemRecord);
 }
-

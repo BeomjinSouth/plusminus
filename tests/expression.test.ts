@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildFinalExpression,
   getDeliveryAction,
   parseSignedSegment,
   splitExpressionIntoTerms,
   tokenizeExpressionForSplitView,
+  unwrapLeadingSimpleTerm,
 } from "../src/lib/expression";
 import { rationalToString } from "../src/lib/rational";
 
@@ -29,6 +31,20 @@ describe("expression helpers", () => {
       { text: ")", type: "bracket", boundaryAfter: 10 },
       { text: "+7", type: "number" },
     ]);
+  });
+
+  it("builds the normalized final expression for rabbit steps", () => {
+    expect(buildFinalExpression(["-4", "-3"])).toBe("-4+(-3)");
+    expect(buildFinalExpression(["+2/3", "+5/6", "-1/2"])).toBe(
+      "2/3+5/6+(-1/2)",
+    );
+  });
+
+  it("unwraps unnecessary parentheses on the leading term", () => {
+    expect(unwrapLeadingSimpleTerm("(-4)+(-3)")).toBe("-4+(-3)");
+    expect(unwrapLeadingSimpleTerm("(+2.4)-(-1.1)-(+0.5)")).toBe(
+      "2.4-(-1.1)-(+0.5)",
+    );
   });
 
   it("normalizes nested signs correctly", () => {

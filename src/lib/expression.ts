@@ -70,6 +70,75 @@ export function splitExpressionIntoTerms(expression: string) {
   return segments;
 }
 
+export function formatTermForFinalExpression(
+  term: string,
+  options?: { allowBarePositive?: boolean },
+) {
+  const normalized = normalizeMathText(term);
+  parseRational(normalized);
+
+  if (normalized.startsWith("+") && options?.allowBarePositive) {
+    return normalized.slice(1);
+  }
+
+  return normalized;
+}
+
+export function getFinalExpressionSegments(terms: string[]) {
+  return terms.map((term, index) => {
+    const formatted = formatTermForFinalExpression(term, {
+      allowBarePositive: index === 0,
+    });
+
+    if (index === 0) {
+      return formatted;
+    }
+
+    if (formatted.startsWith("-")) {
+      return `+(${formatted})`;
+    }
+
+    return `+${formatted.replace(/^\+/, "")}`;
+  });
+}
+
+export function buildFinalExpression(terms: string[]) {
+  return getFinalExpressionSegments(terms).join("");
+}
+
+export function unwrapLeadingSimpleTerm(expression: string) {
+  const normalized = normalizeMathText(expression);
+  const segments = splitExpressionIntoTerms(normalized);
+
+  if (segments.length === 0) {
+    return normalized;
+  }
+
+  const [firstSegment, ...restSegments] = segments;
+  let firstDisplay = firstSegment;
+
+  if (isWrappedBySingleParentheses(firstSegment)) {
+    const inner = firstSegment.slice(1, -1);
+
+    try {
+      parseRational(inner);
+      firstDisplay = inner.startsWith("+") ? inner.slice(1) : inner;
+    } catch {
+      firstDisplay = firstSegment;
+    }
+  } else {
+    try {
+      firstDisplay = formatTermForFinalExpression(firstSegment, {
+        allowBarePositive: true,
+      });
+    } catch {
+      firstDisplay = firstSegment;
+    }
+  }
+
+  return [firstDisplay, ...restSegments].join("");
+}
+
 export function tokenizeExpressionForSplitView(expression: string): SplitViewToken[] {
   const normalized = normalizeMathText(expression);
   const tokens: SplitViewToken[] = [];
