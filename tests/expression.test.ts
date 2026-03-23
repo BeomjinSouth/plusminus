@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildFinalExpression,
-  getDeliveryAction,
   parseSignedSegment,
   splitExpressionIntoTerms,
   tokenizeExpressionForSplitView,
@@ -50,11 +49,5 @@ describe("expression helpers", () => {
   it("normalizes nested signs correctly", () => {
     expect(rationalToString(parseSignedSegment("-(+3/4)").value)).toBe("-3/4");
     expect(rationalToString(parseSignedSegment("-(-5/4)").value)).toBe("5/4");
-  });
-
-  it("maps postman action types from raw segments", () => {
-    expect(getDeliveryAction("-(-5)")).toBe("penalty-out");
-    expect(getDeliveryAction("+(+3)")).toBe("reward-in");
-    expect(getDeliveryAction("-(+2)")).toBe("reward-out");
   });
 });

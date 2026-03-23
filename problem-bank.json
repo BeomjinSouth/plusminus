@@ -17,8 +17,6 @@
       "lineMin": "-2",
       "lineMax": "7",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -39,8 +37,6 @@
       "lineMin": "-9",
       "lineMax": "2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -61,8 +57,6 @@
       "lineMin": "-2",
       "lineMax": "8",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -83,8 +77,6 @@
       "lineMin": "-10",
       "lineMax": "2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -105,8 +97,6 @@
       "lineMin": "-2",
       "lineMax": "8",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -127,8 +117,6 @@
       "lineMin": "-9",
       "lineMax": "2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -149,8 +137,6 @@
       "lineMin": "-1",
       "lineMax": "7/2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     }
@@ -175,8 +161,6 @@
       "lineMin": "-5",
       "lineMax": "7",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -199,8 +183,6 @@
       "lineMin": "-2",
       "lineMax": "10",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -223,8 +205,6 @@
       "lineMin": "-8",
       "lineMax": "5",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -247,8 +227,6 @@
       "lineMin": "-1",
       "lineMax": "3",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -271,8 +249,6 @@
       "lineMin": "-8/3",
       "lineMax": "4/3",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -295,8 +271,6 @@
       "lineMin": "-1",
       "lineMax": "9/2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -319,8 +293,6 @@
       "lineMin": "-11",
       "lineMax": "2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     }
@@ -350,8 +322,6 @@
       "lineMin": "-5",
       "lineMax": "11",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -382,8 +352,6 @@
       "lineMin": "-2",
       "lineMax": "14",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -393,7 +361,7 @@
       "raw_split": [
         "-(+3/4)",
         "-(-5/4)",
-        "+(−1/2)"
+        "+(??/2)"
       ],
       "terms": [
         "-3/4",
@@ -411,8 +379,6 @@
       "lineMin": "-7/4",
       "lineMax": "3/2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -440,8 +406,6 @@
       "lineMin": "-1",
       "lineMax": "5/2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -469,8 +433,6 @@
       "lineMin": "-5/2",
       "lineMax": "5/2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -498,8 +460,6 @@
       "lineMin": "-1",
       "lineMax": "4",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     },
@@ -510,7 +470,7 @@
         "-(+8)",
         "-(-3)",
         "-(-2)",
-        "+(−4)"
+        "+(??)"
       ],
       "terms": [
         "-8",
@@ -530,10 +490,11 @@
       "lineMin": "-10",
       "lineMax": "2",
       "supports": [
-        "counting-stones",
-        "postman",
         "rabbit-sign-parser"
       ]
     }
   ]
 }
+
+
+

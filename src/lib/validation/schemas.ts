@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const modelSchema = z.enum(["counting-stones", "postman", "rabbit-sign-parser"]);
+const modelSchema = z.enum(["rabbit-sign-parser"]);
 const difficultySchema = z.enum(["low", "medium", "high"]);
 
 export const sessionStartSchema = z.object({
@@ -57,4 +57,3 @@ export const progressFlushSchema = z.object({
   events: z.array(attemptEventSchema).optional(),
   setResult: setResultSchema.optional(),
 });
-

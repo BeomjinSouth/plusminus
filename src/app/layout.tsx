@@ -18,7 +18,7 @@ const bodyFont = IBM_Plex_Sans_KR({
 export const metadata: Metadata = {
   title: "PlusMinus Lab",
   description:
-    "유리수의 덧셈과 뺄셈을 셈돌, 카드 점수 미션, 토끼 모델로 학습하는 수업용 웹앱",
+    "유리수의 덧셈과 뺄셈을 점프 계산으로 연습하는 수업용 웹앱",
 };
 
 export default function RootLayout({

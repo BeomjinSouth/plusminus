@@ -5,7 +5,6 @@ import {
   parseRational,
   type Rational,
 } from "@/lib/rational";
-import type { DeliveryActionKey } from "@/lib/types";
 
 export type SplitViewTokenType = "number" | "operator" | "bracket";
 
@@ -251,20 +250,4 @@ export function parseSignedSegment(segment: string) {
     value: signedValue,
     normalizedTerm: formatSignedRational(signedValue),
   };
-}
-
-export function getDeliveryAction(segment: string): DeliveryActionKey {
-  const parsed = parseSignedSegment(segment);
-
-  if (parsed.outerSign === 1 && parsed.innerSign === 1) {
-    return "reward-in";
-  }
-  if (parsed.outerSign === 1 && parsed.innerSign === -1) {
-    return "penalty-in";
-  }
-  if (parsed.outerSign === -1 && parsed.innerSign === 1) {
-    return "reward-out";
-  }
-
-  return "penalty-out";
 }

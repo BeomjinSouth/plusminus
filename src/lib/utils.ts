@@ -19,8 +19,6 @@ export function formatDifficultyLabel(difficulty: Difficulty) {
 export function formatModelLabel(model: ModelId) {
   return (
     {
-      "counting-stones": "돌 놓기",
-      postman: "점수 카드",
       "rabbit-sign-parser": "점프 계산",
     }[model] ?? model
   );
@@ -31,11 +29,7 @@ export function isDifficulty(value: string): value is Difficulty {
 }
 
 export function isModelId(value: string): value is ModelId {
-  return (
-    value === "counting-stones" ||
-    value === "postman" ||
-    value === "rabbit-sign-parser"
-  );
+  return value === "rabbit-sign-parser";
 }
 
 export function toStudentSummary(student: {

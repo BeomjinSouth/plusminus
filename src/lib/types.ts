@@ -1,4 +1,4 @@
-export type ModelId = "counting-stones" | "postman" | "rabbit-sign-parser";
+export type ModelId = "rabbit-sign-parser";
 
 export type Difficulty = "low" | "medium" | "high";
 
@@ -41,10 +41,6 @@ export type PlayerProfile = {
 export type SessionState = {
   sessionId: string;
   student: PlayerProfile;
-};
-
-export type StudentProgress = {
-  completedSetIds: string[];
 };
 
 export type AttemptEvent = {
@@ -99,9 +95,3 @@ export type ChallengeAttempt = {
 export type ChallengeComplete = {
   retriesUsed: number;
 };
-
-export type DeliveryActionKey =
-  | "reward-in"
-  | "reward-out"
-  | "penalty-in"
-  | "penalty-out";
