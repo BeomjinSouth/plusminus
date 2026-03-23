@@ -7,6 +7,14 @@ import {
 } from "@/lib/rational";
 import type { DeliveryActionKey } from "@/lib/types";
 
+export type SplitViewTokenType = "number" | "operator" | "bracket";
+
+export type SplitViewToken = {
+  text: string;
+  type: SplitViewTokenType;
+  boundaryAfter?: number;
+};
+
 export function isWrappedBySingleParentheses(value: string) {
   if (!value.startsWith("(") || !value.endsWith(")")) {
     return false;
@@ -60,6 +68,57 @@ export function splitExpressionIntoTerms(expression: string) {
   }
 
   return segments;
+}
+
+export function tokenizeExpressionForSplitView(expression: string): SplitViewToken[] {
+  const normalized = normalizeMathText(expression);
+  const tokens: SplitViewToken[] = [];
+  let cursor = 0;
+
+  while (cursor < normalized.length) {
+    const char = normalized[cursor];
+    let text = "";
+    let type: SplitViewTokenType = "number";
+
+    if (char === "(" || char === ")") {
+      text = char;
+      type = "bracket";
+      cursor += 1;
+    } else if ((char === "+" || char === "-") && normalized[cursor + 1] === "(") {
+      text = char;
+      type = "operator";
+      cursor += 1;
+    } else {
+      const start = cursor;
+
+      if (char === "+" || char === "-") {
+        cursor += 1;
+      }
+
+      while (cursor < normalized.length) {
+        const nextChar = normalized[cursor];
+        if (nextChar === "+" || nextChar === "-" || nextChar === "(" || nextChar === ")") {
+          break;
+        }
+        cursor += 1;
+      }
+
+      text = normalized.slice(start, cursor);
+      type = "number";
+    }
+
+    if (!text) {
+      continue;
+    }
+
+    tokens.push({
+      text,
+      type,
+      boundaryAfter: cursor < normalized.length ? cursor : undefined,
+    });
+  }
+
+  return tokens;
 }
 
 export function splitByGapSelection(expression: string, selectedGaps: number[]) {
@@ -140,4 +199,3 @@ export function getDeliveryAction(segment: string): DeliveryActionKey {
 
   return "penalty-out";
 }
-

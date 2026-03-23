@@ -65,8 +65,8 @@ export function RabbitParserChallenge({
     tone: "info",
     message:
       difficulty === "high"
-        ? "먼저 식 아래 표시점을 눌러, 항이 끝나는 곳만 골라 보세요."
-        : "식 아래 표시점으로 항을 나누고, 부호를 정리한 뒤 토끼를 움직입니다.",
+        ? "먼저 블록 사이 빈칸을 눌러, 항이 끝나는 곳만 골라 보세요."
+        : "블록 사이 빈칸으로 항을 나누고, 부호를 정리한 뒤 토끼를 움직입니다.",
   });
   const attemptMapRef = useRef<Record<string, number>>({});
   const startedAtRef = useRef(Date.now());
@@ -376,8 +376,8 @@ export function RabbitParserChallenge({
         <div className="rounded-[2rem] bg-white/80 p-5">
           <h3 className="font-[var(--font-display)] text-3xl">1단계 · 끊기</h3>
           <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
-            식 모양은 그대로 두고, 아래 점을 눌러 끊을 곳만 표시해 주세요. 미리보기에서
-            조각이 어떻게 나뉘는지 바로 확인할 수 있습니다.
+            식을 블록으로 보고, 항이 끝나는 곳의 빈칸만 눌러 주세요. 괄호 안은 그대로 두고
+            미리보기에서 조각이 어떻게 나뉘는지 바로 확인하면 됩니다.
           </p>
           <div className="mt-5">
             <ExpressionSplitter
@@ -392,9 +392,16 @@ export function RabbitParserChallenge({
               }
             />
           </div>
-          <Button className="mt-5" onClick={submitSplit}>
-            끊기 제출
-          </Button>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button
+              tone="secondary"
+              onClick={() => setSelectedGaps([])}
+              disabled={selectedGaps.length === 0}
+            >
+              다시 붙이기
+            </Button>
+            <Button onClick={submitSplit}>끊기 제출</Button>
+          </div>
         </div>
       )}
 

@@ -4,6 +4,7 @@ import {
   getDeliveryAction,
   parseSignedSegment,
   splitExpressionIntoTerms,
+  tokenizeExpressionForSplitView,
 } from "../src/lib/expression";
 import { rationalToString } from "../src/lib/rational";
 
@@ -13,6 +14,20 @@ describe("expression helpers", () => {
       "-(+3)",
       "-(-5)",
       "+7",
+    ]);
+  });
+
+  it("tokenizes rabbit split expressions into block view tokens", () => {
+    expect(tokenizeExpressionForSplitView("-(+3)-(-5)+7")).toEqual([
+      { text: "-", type: "operator", boundaryAfter: 1 },
+      { text: "(", type: "bracket", boundaryAfter: 2 },
+      { text: "+3", type: "number", boundaryAfter: 4 },
+      { text: ")", type: "bracket", boundaryAfter: 5 },
+      { text: "-", type: "operator", boundaryAfter: 6 },
+      { text: "(", type: "bracket", boundaryAfter: 7 },
+      { text: "-5", type: "number", boundaryAfter: 9 },
+      { text: ")", type: "bracket", boundaryAfter: 10 },
+      { text: "+7", type: "number" },
     ]);
   });
 
