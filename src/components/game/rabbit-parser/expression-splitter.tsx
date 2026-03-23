@@ -15,14 +15,14 @@ type ExpressionSplitterProps = {
 
 function getTokenStyle(type: SplitViewTokenType) {
   if (type === "number") {
-    return "border-sky-300 bg-sky-100 text-sky-950 shadow-[0_10px_0_rgb(125,211,252)]";
+    return "border-[rgba(47,124,121,0.14)] bg-[linear-gradient(180deg,rgba(247,252,251,0.98),rgba(227,239,236,0.96))] text-[var(--sea)] shadow-[0_16px_30px_rgba(47,124,121,0.12)]";
   }
 
   if (type === "operator") {
-    return "border-rose-300 bg-rose-100 text-rose-950 shadow-[0_10px_0_rgb(253,164,175)]";
+    return "border-[rgba(181,82,67,0.16)] bg-[linear-gradient(180deg,rgba(253,247,246,0.98),rgba(246,228,224,0.96))] text-[var(--berry)] shadow-[0_16px_30px_rgba(181,82,67,0.12)]";
   }
 
-  return "border-stone-300 bg-stone-50 text-stone-500 shadow-[0_10px_0_rgb(214,211,209)]";
+  return "border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(241,236,228,0.96))] text-[var(--ink-soft)] shadow-[0_14px_26px_rgba(19,34,56,0.08)]";
 }
 
 export function ExpressionSplitter({
@@ -38,21 +38,21 @@ export function ExpressionSplitter({
   );
 
   return (
-    <div className="rounded-[2.25rem] border border-[#f0dcb1] bg-[linear-gradient(180deg,#fff7e5,#fffaf1)] p-4 shadow-[0_24px_60px_rgba(217,119,44,0.12)] md:p-6">
+    <div className="rounded-[2rem] border border-[rgba(217,119,44,0.14)] bg-[linear-gradient(180deg,rgba(255,252,247,0.96),rgba(247,241,232,0.82))] p-4 shadow-[0_22px_50px_rgba(33,31,26,0.08)] md:p-5">
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-amber-100 px-4 py-2 text-sm font-black text-amber-800">
-          블록 사이 빈칸을 눌러 보세요
+        <span className="rounded-full border border-[rgba(217,119,44,0.16)] bg-white/88 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sun)]">
+          블록 사이 빈칸 선택
         </span>
-        <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
+        <span className="rounded-full bg-white/76 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
           선택한 끊기 {selectedGaps.length}곳
         </span>
-        <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
+        <span className="rounded-full bg-white/76 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
           현재 {previewSegments.length}조각
         </span>
       </div>
 
       <div className="overflow-x-auto pb-2">
-        <div className="min-w-max rounded-[2rem] border-4 border-[#f6e7c2] bg-white px-4 py-6 shadow-[0_18px_40px_rgba(231,178,88,0.12)] md:px-6 md:py-8">
+        <div className="min-w-max rounded-[1.8rem] border border-[rgba(217,119,44,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(250,246,239,0.94))] px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_16px_34px_rgba(33,31,26,0.06)] md:px-5 md:py-6">
           <div className="flex items-center">
             {tokens.map((token, index) => {
               const boundaryAfter = token.boundaryAfter;
@@ -67,11 +67,11 @@ export function ExpressionSplitter({
                 <Fragment key={`${token.text}-${index}`}>
                   <div
                     className={cn(
-                      "relative mx-1.5 flex min-h-[5.75rem] min-w-[4.5rem] items-center justify-center rounded-[1.6rem] border-4 px-4 py-5 text-[clamp(2rem,4.8vw,3.5rem)] font-black leading-none transition duration-300 ease-out select-none md:min-h-[6.5rem] md:min-w-[5rem] md:px-5 md:py-6",
-                      "hover:-translate-y-1.5",
+                      "relative mx-1 flex min-h-[5.4rem] min-w-[4.25rem] items-center justify-center rounded-[1.35rem] border px-4 py-4 text-[clamp(1.9rem,4.5vw,3.2rem)] font-black leading-none transition duration-200 ease-out select-none md:min-h-[6rem] md:min-w-[4.7rem] md:px-5 md:py-5",
+                      "hover:-translate-y-0.5",
                       getTokenStyle(token.type),
-                      hasGapBefore && "translate-x-3 md:translate-x-4",
-                      hasGapAfter && "-translate-x-3 md:-translate-x-4",
+                      hasGapBefore && "translate-x-2 md:translate-x-2.5",
+                      hasGapAfter && "-translate-x-2 md:-translate-x-2.5",
                     )}
                   >
                     {token.text}
@@ -85,17 +85,17 @@ export function ExpressionSplitter({
                       title="끊기 선택"
                       onClick={() => onToggleGap(boundaryAfter)}
                       className={cn(
-                        "group relative z-10 flex shrink-0 items-center justify-center transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f7d589] focus-visible:ring-offset-4 focus-visible:ring-offset-[#fff7e5]",
-                        isSelected ? "mx-2 w-20 sm:w-24" : "mx-0.5 w-9 opacity-80 hover:opacity-100 sm:w-10",
+                        "group relative z-10 flex shrink-0 items-center justify-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(217,119,44,0.18)] focus-visible:ring-offset-4 focus-visible:ring-offset-[rgba(247,241,232,0.9)]",
+                        isSelected ? "mx-1.5 w-14 sm:w-16" : "mx-0.5 w-8 sm:w-9",
                       )}
                     >
                       {isSelected ? (
-                        <span className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-rose-700 bg-rose-500 text-4xl font-black text-white shadow-[0_10px_0_rgb(190,24,93)] animate-bounce sm:h-16 sm:w-16 sm:text-5xl">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(217,119,44,0.16)] bg-[linear-gradient(180deg,var(--sun),#c86a22)] text-2xl font-black text-white shadow-[0_14px_24px_rgba(217,119,44,0.2)] sm:h-12 sm:w-12">
                           /
                         </span>
                       ) : (
-                        <span className="flex h-14 w-9 items-center justify-center rounded-full border-4 border-dashed border-amber-300 bg-[#fff9ee] text-2xl text-amber-600 shadow-sm transition-all duration-200 group-hover:scale-110 group-hover:border-amber-500 group-hover:bg-amber-200 sm:h-16 sm:w-10">
-                          ✂
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-dashed border-[rgba(217,119,44,0.34)] bg-white/88 shadow-[0_8px_18px_rgba(33,31,26,0.06)] transition group-hover:border-[var(--sun)] group-hover:bg-white sm:h-10 sm:w-10">
+                          <span className="h-2.5 w-2.5 rounded-full bg-[var(--gold)] shadow-[0_0_0_5px_rgba(231,178,88,0.14)]" />
                         </span>
                       )}
                     </button>
@@ -107,18 +107,18 @@ export function ExpressionSplitter({
         </div>
       </div>
 
-      <div className="mt-5 rounded-[1.75rem] border border-[#eadfc8] bg-white/85 px-4 py-4">
+      <div className="mt-4 rounded-[1.55rem] border border-[var(--line)] bg-white/82 px-4 py-4 shadow-[0_14px_24px_rgba(19,34,56,0.05)]">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
           미리보기
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           {previewSegments.map((segment, index) => (
             <Fragment key={`${segment}-${index}`}>
-              <span className="rounded-[1.3rem] border border-[#ebe1d0] bg-white px-4 py-3 font-mono text-base font-black text-[var(--ink-strong)] shadow-[0_12px_24px_rgba(19,34,56,0.08)]">
+              <span className="rounded-[1.15rem] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,244,238,0.94))] px-4 py-2.5 font-mono text-sm font-semibold text-[var(--ink-strong)] shadow-[0_10px_18px_rgba(19,34,56,0.06)] md:text-base">
                 {segment}
               </span>
               {index < previewSegments.length - 1 ? (
-                <span aria-hidden className="text-lg font-black text-rose-500">
+                <span aria-hidden className="text-sm font-black text-[var(--sun)]">
                   /
                 </span>
               ) : null}
