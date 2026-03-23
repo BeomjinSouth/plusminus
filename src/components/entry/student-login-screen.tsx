@@ -88,7 +88,7 @@ export function StudentLoginScreen() {
             </label>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <label className="grid gap-2">
+              <label className="grid min-w-0 gap-2">
                 <span className="field-label">학년</span>
                 <input
                   value={grade}
@@ -99,7 +99,7 @@ export function StudentLoginScreen() {
                 />
               </label>
 
-              <label className="grid gap-2">
+              <label className="grid min-w-0 gap-2">
                 <span className="field-label">반</span>
                 <input
                   value={classNo}
@@ -110,7 +110,7 @@ export function StudentLoginScreen() {
                 />
               </label>
 
-              <label className="grid gap-2">
+              <label className="grid min-w-0 gap-2">
                 <span className="field-label">번호</span>
                 <input
                   value={studentNo}
