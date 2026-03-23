@@ -141,7 +141,7 @@ type Problem = {
 - `attempt_events` 에 단계별 시도를 누적 기록
 - 세트 완료 시 `set_results` append
 - 클라이언트는 attempt queue 를 유지
-- `문항 종료`, `단계 성공`, `페이지 이탈 직전` 에 flush
+- `문항 종료`, `세트 완료`, `페이지 이탈 직전` 에 flush
 
 ---
 

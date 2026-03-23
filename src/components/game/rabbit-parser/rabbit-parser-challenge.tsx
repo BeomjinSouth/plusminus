@@ -195,7 +195,6 @@ export function RabbitParserChallenge({
       normalizedInput: problem.rawSplit.join(" / "),
       isCorrect,
       responseTimeMs,
-      flushNow: isCorrect,
     });
 
     if (!isCorrect) {
@@ -244,7 +243,6 @@ export function RabbitParserChallenge({
       normalizedInput: `${problem.terms.join(", ")} | ${finalExpression}`,
       isCorrect,
       responseTimeMs,
-      flushNow: isCorrect,
     });
 
     if (!areTermsCorrect) {
@@ -305,7 +303,6 @@ export function RabbitParserChallenge({
       responseTimeMs,
       currentPosition: rationalToString(previewPosition),
       expectedValue: rationalToString(expectedTarget),
-      flushNow: isCorrect,
     });
 
     if (!isCorrect) {
@@ -354,7 +351,6 @@ export function RabbitParserChallenge({
       normalizedInput: problem.answer,
       isCorrect,
       responseTimeMs,
-      flushNow: true,
     });
 
     if (!isCorrect) {

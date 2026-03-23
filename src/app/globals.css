@@ -152,7 +152,7 @@ textarea {
 }
 
 .pulse-good {
-  animation: pulse-good 0.5s ease-out;
+  animation: pulse-good 0.22s ease-out;
 }
 
 .shake-soft {
@@ -160,7 +160,7 @@ textarea {
 }
 
 .feedback-success-burst {
-  animation: feedback-success-burst 0.7s ease-out;
+  animation: feedback-success-burst 0.3s ease-out;
 }
 
 .feedback-success-spark {
@@ -171,7 +171,7 @@ textarea {
   border-radius: 9999px;
   background: radial-gradient(circle, white 0%, var(--gold) 55%, rgba(231, 178, 88, 0) 100%);
   box-shadow: 0 0 18px rgba(231, 178, 88, 0.35);
-  animation: feedback-success-spark 0.7s ease-out both;
+  animation: feedback-success-spark 0.3s ease-out both;
 }
 
 .feedback-success-glow {
@@ -183,11 +183,11 @@ textarea {
   border-radius: 9999px;
   background: radial-gradient(circle, rgba(110, 231, 183, 0.24), rgba(110, 231, 183, 0));
   filter: blur(12px);
-  animation: feedback-success-glow 0.7s ease-out both;
+  animation: feedback-success-glow 0.3s ease-out both;
 }
 
 .rabbit-hop {
-  animation: rabbit-hop 0.54s cubic-bezier(0.22, 0.84, 0.28, 1);
+  animation: rabbit-hop 0.26s cubic-bezier(0.22, 0.84, 0.28, 1);
 }
 
 .rabbit-float {
