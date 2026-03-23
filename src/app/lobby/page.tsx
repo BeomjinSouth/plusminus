@@ -37,7 +37,7 @@ export default function LobbyPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="font-[var(--font-display)] text-[2rem] leading-none tracking-[-0.05em] md:text-[2.7rem]">
-              모델 선택
+              연습 고르기
             </h1>
             <p className="mt-2 text-sm text-[var(--ink-soft)]">
               {toStudentSummary(session.student)}
@@ -58,6 +58,16 @@ export default function LobbyPage() {
             <h2 className="font-[var(--font-display)] text-[2rem] leading-none tracking-[-0.04em]">
               {model.title}
             </h2>
+
+            <div className="mt-4 rounded-[1.5rem] border border-white/70 bg-white/84 px-4 py-4">
+              <div className="grid gap-2 text-sm font-semibold text-[var(--ink-strong)]">
+                {model.quickPoints.map((point, index) => (
+                  <p key={point}>
+                    Step {index + 1}. {point}
+                  </p>
+                ))}
+              </div>
+            </div>
 
             <div className="mt-5 grid gap-3">
               {difficulties.map((difficulty) => (

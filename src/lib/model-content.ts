@@ -26,7 +26,7 @@ export const modelInsights: ModelInsight[] = [
     id: "counting-stones",
     shortName: "Stones",
     badge: "조작 중심",
-    title: "셈돌 모델",
+    title: "돌 놓기",
     meaning:
       "양돌과 음돌이 만나면 0이 된다는 구조를 눈앞에서 보이게 해 주는 모델입니다.",
     bestUse:
@@ -46,13 +46,13 @@ export const modelInsights: ModelInsight[] = [
     iconText: "+ -",
     stageTitle: "양돌과 음돌이 부딪히는 보드",
     stageBody: "직접 올리고 지우면서 남는 수를 바로 읽습니다.",
-    quickPoints: ["손으로 놓기", "0쌍 소거", "보드 확인"],
+    quickPoints: ["돌 놓기", "0쌍 찾기", "답 쓰기"],
   },
   {
     id: "postman",
     shortName: "Cards",
     badge: "장면 중심",
-    title: "카드 점수 미션",
+    title: "점수 카드",
     meaning:
       "점수판에 보상 카드와 벌점 카드가 들어오거나 나가는 장면으로 식을 읽어 보는 방식입니다.",
     bestUse:
@@ -72,13 +72,13 @@ export const modelInsights: ModelInsight[] = [
     iconText: "CARD",
     stageTitle: "점수판에 카드가 들어오고 나가는 무대",
     stageBody: "각 조각을 장면 카드로 바꾸고 마지막 숫자를 맞힙니다.",
-    quickPoints: ["장면 선택", "스티커 누적", "마지막 점수"],
+    quickPoints: ["장면 고르기", "점수 바꾸기", "답 쓰기"],
   },
   {
     id: "rabbit-sign-parser",
     shortName: "Rabbit",
     badge: "기호 중심",
-    title: "토끼 부호-분해 모델",
+    title: "점프 계산",
     meaning:
       "식을 항 단위로 끊고 부호를 정리한 뒤, 토끼가 수직선을 따라 움직이면서 계산하는 모델입니다.",
     bestUse:
@@ -98,7 +98,7 @@ export const modelInsights: ModelInsight[] = [
     iconText: "0 ->",
     stageTitle: "항을 끊고, 읽고, 점프하는 수직선 코스",
     stageBody: "한 번에 계산하지 않고 단계별로 진행하는 분석형 플레이입니다.",
-    quickPoints: ["항 끊기", "부호 정리", "토끼 이동"],
+    quickPoints: ["식 끊기", "부호 정리", "점프하기"],
   },
 ];
 

@@ -9,9 +9,9 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDifficultyLabel(difficulty: Difficulty) {
   return (
     {
-      low: "하",
-      medium: "중",
-      high: "상",
+      low: "쉬움",
+      medium: "보통",
+      high: "어려움",
     }[difficulty] ?? difficulty
   );
 }
@@ -19,9 +19,9 @@ export function formatDifficultyLabel(difficulty: Difficulty) {
 export function formatModelLabel(model: ModelId) {
   return (
     {
-      "counting-stones": "셈돌 모델",
-      postman: "카드 점수 미션",
-      "rabbit-sign-parser": "토끼 부호-분해 모델",
+      "counting-stones": "돌 놓기",
+      postman: "점수 카드",
+      "rabbit-sign-parser": "점프 계산",
     }[model] ?? model
   );
 }
