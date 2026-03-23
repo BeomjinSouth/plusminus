@@ -43,6 +43,36 @@ const countingStonesSteps = [
   "답 쓰기",
 ];
 
+type MinimalHeaderConfig = {
+  textClass: string;
+  panelClass: string;
+  stepClass: string;
+  progressClass: string;
+  progressTrackClass: string;
+  steps: string[];
+};
+
+const minimalModelHeader: Partial<Record<ModelId, MinimalHeaderConfig>> = {
+  "counting-stones": {
+    textClass: "text-sky-700",
+    panelClass:
+      "border-sky-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(240,249,255,0.94))] shadow-[0_20px_40px_rgba(14,165,233,0.12)]",
+    stepClass: "border-sky-100 bg-white/88",
+    progressClass: "bg-sky-500",
+    progressTrackClass: "bg-sky-100",
+    steps: countingStonesSteps,
+  },
+  "rabbit-sign-parser": {
+    textClass: "text-amber-700",
+    panelClass:
+      "border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.94))] shadow-[0_20px_40px_rgba(245,158,11,0.12)]",
+    stepClass: "border-amber-100 bg-white/88",
+    progressClass: "bg-amber-500",
+    progressTrackClass: "bg-amber-100",
+    steps: ["끊기", "부호 정리", "토끼 이동"],
+  },
+};
+
 export function SetPlayer({
   session,
   model,
@@ -63,7 +93,7 @@ export function SetPlayer({
   const setId = useMemo(() => makeSetId(model, difficulty), [model, difficulty]);
   const problem = problems[problemIndex];
   const modelInsight = getModelInsight(model);
-  const isCountingStones = model === "counting-stones";
+  const minimalHeader = minimalModelHeader[model];
   const progressPercent = ((problemIndex + 1) / problems.length) * 100;
 
   useEffect(() => {
@@ -205,13 +235,13 @@ export function SetPlayer({
     }
   }
 
-  if (isCountingStones) {
+  if (minimalHeader) {
     return (
       <section className="grid gap-4">
-        <div className="rounded-[2rem] border border-sky-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(240,249,255,0.94))] p-5 shadow-[0_20px_40px_rgba(14,165,233,0.12)] md:p-6">
+        <div className={`rounded-[2rem] border p-5 md:p-6 ${minimalHeader.panelClass}`}>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-sky-700">
+              <p className={`text-sm font-semibold uppercase tracking-[0.14em] ${minimalHeader.textClass}`}>
                 문제 {problemIndex + 1} / {problems.length}
               </p>
               <h1 className="mt-3 font-[var(--font-display)] text-[3rem] leading-none tracking-[-0.06em] text-[var(--ink-strong)] md:text-[4rem]">
@@ -226,12 +256,12 @@ export function SetPlayer({
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {countingStonesSteps.map((step, index) => (
+            {minimalHeader.steps.map((step, index) => (
               <div
                 key={step}
-                className="rounded-[1.35rem] border border-sky-100 bg-white/88 px-4 py-4"
+                className={`rounded-[1.35rem] border px-4 py-4 ${minimalHeader.stepClass}`}
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">
+                <p className={`text-xs font-semibold uppercase tracking-[0.16em] ${minimalHeader.textClass}`}>
                   해야 할 일 {index + 1}
                 </p>
                 <p className="mt-2 text-base font-semibold text-[var(--ink-strong)]">
@@ -241,9 +271,9 @@ export function SetPlayer({
             ))}
           </div>
 
-          <div className="mt-4 h-3 overflow-hidden rounded-full bg-sky-100">
+          <div className={`mt-4 h-3 overflow-hidden rounded-full ${minimalHeader.progressTrackClass}`}>
             <div
-              className="h-full rounded-full bg-sky-500 transition-all"
+              className={`h-full rounded-full transition-all ${minimalHeader.progressClass}`}
               style={{ width: `${progressPercent}%` }}
             />
           </div>

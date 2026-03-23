@@ -39,17 +39,9 @@ export function ExpressionSplitter({
 
   return (
     <div className="rounded-[2rem] border border-[rgba(217,119,44,0.14)] bg-[linear-gradient(180deg,rgba(255,252,247,0.96),rgba(247,241,232,0.82))] p-4 shadow-[0_22px_50px_rgba(33,31,26,0.08)] md:p-5">
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="rounded-full border border-[rgba(217,119,44,0.16)] bg-white/88 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sun)]">
-          블록 사이 빈칸 선택
-        </span>
-        <span className="rounded-full bg-white/76 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
-          선택한 끊기 {selectedGaps.length}곳
-        </span>
-        <span className="rounded-full bg-white/76 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
-          현재 {previewSegments.length}조각
-        </span>
-      </div>
+      <p className="mb-4 text-sm font-semibold text-[var(--ink-soft)]">
+        점을 눌러 끊을 곳을 고르세요.
+      </p>
 
       <div className="overflow-x-auto pb-2">
         <div className="min-w-max rounded-[1.8rem] border border-[rgba(217,119,44,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(250,246,239,0.94))] px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_16px_34px_rgba(33,31,26,0.06)] md:px-5 md:py-6">
@@ -108,9 +100,7 @@ export function ExpressionSplitter({
       </div>
 
       <div className="mt-4 rounded-[1.55rem] border border-[var(--line)] bg-white/82 px-4 py-4 shadow-[0_14px_24px_rgba(19,34,56,0.05)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-          미리보기
-        </p>
+        <p className="text-sm font-semibold text-[var(--ink-soft)]">지금 끊은 모양</p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           {previewSegments.map((segment, index) => (
             <Fragment key={`${segment}-${index}`}>
