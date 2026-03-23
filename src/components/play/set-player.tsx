@@ -17,7 +17,7 @@ import {
   flushAttemptQueueWithBeacon,
   queueAttemptEvent,
 } from "@/lib/logging/client-logger";
-import { saveLatestResult } from "@/lib/storage";
+import { recordStudentSetResult, saveLatestResult } from "@/lib/storage";
 import type {
   AttemptEvent,
   ChallengeAttempt,
@@ -196,6 +196,7 @@ export function SetPlayer({
 
     setIsFinishing(true);
     await finalizeProgress(session.sessionId, setResult);
+    recordStudentSetResult(session.student.studentKey, setResult);
     saveLatestResult(setResult);
     router.push(`/result/${model}/${difficulty}`);
   }

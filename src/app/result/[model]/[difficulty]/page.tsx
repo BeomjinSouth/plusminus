@@ -7,8 +7,16 @@ import { useEffect, useState } from "react";
 import { StatPill } from "@/components/common/stat-pill";
 import { AppFrame } from "@/components/layout/app-frame";
 import { difficultyMissionLabels, getModelInsight } from "@/lib/model-content";
-import { loadLatestResult, loadSessionState } from "@/lib/storage";
-import type { SessionState, SetResult } from "@/lib/types";
+import {
+  COUNTING_STONES_MASTERY_SET_ID,
+  hasMasteredCountingStones,
+} from "@/lib/progress";
+import {
+  loadLatestResult,
+  loadSessionState,
+  loadStudentProgress,
+} from "@/lib/storage";
+import type { SessionState, SetResult, StudentProgress } from "@/lib/types";
 import {
   formatDifficultyLabel,
   formatModelLabel,
@@ -19,13 +27,21 @@ export default function ResultPage() {
   const params = useParams<{ model: string; difficulty: string }>();
   const [result, setResult] = useState<SetResult | null>(null);
   const [session, setSession] = useState<SessionState | null>(null);
+  const [progress, setProgress] = useState<StudentProgress | null>(null);
 
   useEffect(() => {
-    setResult(loadLatestResult());
-    setSession(loadSessionState());
+    const latestResult = loadLatestResult();
+    const currentSession = loadSessionState();
+
+    setResult(latestResult);
+    setSession(currentSession);
+
+    if (currentSession) {
+      setProgress(loadStudentProgress(currentSession.student.studentKey));
+    }
   }, []);
 
-  if (!result || !session) {
+  if (!result || !session || !progress) {
     return (
       <AppFrame>
         <div className="panel rounded-[2rem] p-8">
@@ -36,6 +52,9 @@ export default function ResultPage() {
   }
 
   const modelInsight = getModelInsight(result.model);
+  const rabbitUnlocked = hasMasteredCountingStones(progress);
+  const unlockedByThisResult =
+    result.setId === COUNTING_STONES_MASTERY_SET_ID && rabbitUnlocked;
 
   return (
     <AppFrame>
@@ -81,6 +100,14 @@ export default function ResultPage() {
       </section>
 
       <section className="mt-6 flex flex-wrap gap-3">
+        {unlockedByThisResult && (
+          <Link
+            href="/play/rabbit-sign-parser/low"
+            className="rounded-full bg-[var(--berry)] px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(225,29,72,0.18)]"
+          >
+            점프 계산 시작하기
+          </Link>
+        )}
         <Link
           href={`/play/${params.model}/${params.difficulty}`}
           className="rounded-full bg-[var(--sun)] px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(217,119,44,0.22)]"
@@ -94,6 +121,16 @@ export default function ResultPage() {
           다른 모델 선택하기
         </Link>
       </section>
+
+      {result.model === "counting-stones" && (
+        <section className="mt-6 rounded-[1.8rem] border border-[var(--line)] bg-white/84 px-5 py-5">
+          <p className="text-sm font-semibold text-[var(--ink-strong)]">
+            {rabbitUnlocked
+              ? "돌 놓기 마스터 완료. 이제 점프 계산으로 이어서 갈 수 있습니다."
+              : "점프 계산은 돌 놓기 어려움 세트를 완료하면 열립니다."}
+          </p>
+        </section>
+      )}
     </AppFrame>
   );
 }

@@ -1,8 +1,10 @@
-import type { SessionState, SetResult } from "@/lib/types";
+import { createEmptyStudentProgress, recordSetResult } from "@/lib/progress";
+import type { SessionState, SetResult, StudentProgress } from "@/lib/types";
 
 const SESSION_KEY = "plusminus:session";
 const RESULT_KEY = "plusminus:latest-result";
 const ATTEMPT_QUEUE_KEY = "plusminus:attempt-queue";
+const PROGRESS_KEY = "plusminus:student-progress";
 
 function readStorage<T>(key: string): T | null {
   if (typeof window === "undefined") {
@@ -53,6 +55,29 @@ export function saveLatestResult(value: SetResult) {
   writeStorage(RESULT_KEY, value);
 }
 
+export function loadStudentProgress(studentKey: string) {
+  const progressMap =
+    readStorage<Record<string, StudentProgress>>(PROGRESS_KEY) ?? {};
+
+  return progressMap[studentKey] ?? createEmptyStudentProgress();
+}
+
+export function saveStudentProgress(studentKey: string, value: StudentProgress) {
+  const progressMap =
+    readStorage<Record<string, StudentProgress>>(PROGRESS_KEY) ?? {};
+
+  writeStorage(PROGRESS_KEY, {
+    ...progressMap,
+    [studentKey]: value,
+  });
+}
+
+export function recordStudentSetResult(studentKey: string, result: SetResult) {
+  const nextProgress = recordSetResult(loadStudentProgress(studentKey), result);
+  saveStudentProgress(studentKey, nextProgress);
+  return nextProgress;
+}
+
 export function loadAttemptQueue<T>() {
   return readStorage<T[]>(ATTEMPT_QUEUE_KEY) ?? [];
 }
@@ -60,4 +85,3 @@ export function loadAttemptQueue<T>() {
 export function saveAttemptQueue<T>(value: T[]) {
   writeStorage(ATTEMPT_QUEUE_KEY, value);
 }
-

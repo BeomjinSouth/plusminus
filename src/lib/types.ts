@@ -43,6 +43,10 @@ export type SessionState = {
   student: PlayerProfile;
 };
 
+export type StudentProgress = {
+  completedSetIds: string[];
+};
+
 export type AttemptEvent = {
   eventId: string;
   createdAt: string;
@@ -101,4 +105,3 @@ export type DeliveryActionKey =
   | "reward-out"
   | "penalty-in"
   | "penalty-out";
-
