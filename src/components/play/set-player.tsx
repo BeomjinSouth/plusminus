@@ -25,7 +25,7 @@ type SetPlayerProps = {
   problems: Problem[];
 };
 
-const jumpSteps = ["식 끊기", "부호 정리", "점프하기"];
+const jumpSteps = ["식 끊기", "부호 정리", "점프하기", "답 쓰기"];
 
 export function SetPlayer({
   session,
@@ -171,7 +171,7 @@ export function SetPlayer({
           )}
         </div>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 md:grid-cols-4">
           {jumpSteps.map((step, index) => (
             <div
               key={step}

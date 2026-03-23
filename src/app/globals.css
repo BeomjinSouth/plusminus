@@ -194,6 +194,10 @@ textarea {
   animation: rabbit-float 1.8s ease-in-out infinite;
 }
 
+.carrot-bob {
+  animation: carrot-bob 1.6s ease-in-out infinite;
+}
+
 .stone-chip {
   position: relative;
   display: inline-flex;
@@ -413,6 +417,16 @@ textarea {
   }
 }
 
+@keyframes carrot-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(3deg);
+  }
+}
+
 @keyframes stone-enter {
   0% {
     opacity: 0;
@@ -555,6 +569,7 @@ textarea {
   .feedback-success-glow,
   .rabbit-hop,
   .rabbit-float,
+  .carrot-bob,
   .stone-chip[data-animation="enter"],
   .stone-chip[data-animation="leave"],
   .stone-chip[data-animation="cancel"],

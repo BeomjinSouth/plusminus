@@ -13,6 +13,7 @@ import {
   splitByGapSelection,
 } from "@/lib/expression";
 import {
+  absRational,
   addRational,
   compareRational,
   equalsRational,
@@ -38,9 +39,8 @@ type RabbitParserChallengeProps = {
 const phaseOrder = [
   { key: "split", label: "1. 끊기" },
   { key: "normalize", label: "2. 정리" },
-  { key: "start", label: "3. 시작" },
-  { key: "move", label: "4. 점프" },
-  { key: "result", label: "5. 답" },
+  { key: "move", label: "3. 점프" },
+  { key: "result", label: "4. 답" },
 ] as const;
 
 type RabbitPhase = (typeof phaseOrder)[number]["key"];
@@ -87,7 +87,6 @@ export function RabbitParserChallenge({
     Array.from({ length: problem.rawSplit.length }, () => ""),
   );
   const [finalExpressionInput, setFinalExpressionInput] = useState("");
-  const [selectedStart, setSelectedStart] = useState<Rational | undefined>();
   const [moveIndex, setMoveIndex] = useState(0);
   const [currentPosition, setCurrentPosition] = useState<Rational>(
     parseRational(problem.terms[0]),
@@ -267,38 +266,6 @@ export function RabbitParserChallenge({
       return;
     }
 
-    setPhase("start");
-    setFeedback({
-      tone: "success",
-      message: "좋아요. 첫 번째 항 위치에서 토끼를 출발시켜 보세요.",
-    });
-  }
-
-  async function submitStart() {
-    const stepId = "choose-start-point";
-    const attemptNo = nextAttempt(stepId);
-    const responseTimeMs = Date.now() - startedAtRef.current;
-    const isCorrect = !!selectedStart && equalsRational(selectedStart, startValue);
-
-    await onAttempt({
-      stepId,
-      attemptNo,
-      inputRaw: selectedStart ? rationalToString(selectedStart) : "",
-      normalizedInput: rationalToString(startValue),
-      isCorrect,
-      responseTimeMs,
-      flushNow: isCorrect,
-    });
-
-    if (!isCorrect) {
-      setRetryCount((value) => value + 1);
-      setFeedback({
-        tone: "warning",
-        message: "시작 위치는 항상 첫 번째 항입니다. 강조된 첫 항을 다시 보세요.",
-      });
-      return;
-    }
-
     setCurrentPosition(startValue);
     setPreviewPosition(startValue);
 
@@ -314,7 +281,7 @@ export function RabbitParserChallenge({
     setPhase("move");
     setFeedback({
       tone: "success",
-      message: "좋아요. 강조된 항을 적용하면서 토끼를 점프시켜 보세요.",
+      message: "토끼가 첫 번째 항 위치로 갔어요. 이제 다음 항부터 점프하세요.",
     });
   }
 
@@ -541,44 +508,48 @@ export function RabbitParserChallenge({
         </section>
       )}
 
-      {phase === "start" && (
-        <section className="rounded-[1.9rem] border border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.95))] p-5 shadow-[0_16px_32px_rgba(245,158,11,0.08)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
-            지금 단계
-          </p>
-          <h2 className="mt-2 font-[var(--font-display)] text-[2.3rem] leading-none tracking-[-0.05em] text-[var(--ink-strong)] md:text-[2.8rem]">
-            첫 번째 항에서 출발
-          </h2>
-          <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
-            시작 위치는 항상 첫 번째 항입니다. 강조된 항 위치를 눌러 주세요.
-          </p>
-          <div className="mt-5">
-            <ExpressionRibbon segments={finalExpressionSegments} activeIndex={0} />
-          </div>
-          <div className="mt-5 rounded-[1.6rem] border border-[var(--line)] bg-white/90 p-4">
-            <NumberLine
-              min={lineMin}
-              max={lineMax}
-              tick={tick}
-              current={selectedStart}
-              selectable
-              onSelect={(value) => setSelectedStart(value)}
-            />
-          </div>
-          <Button className="mt-5 py-4 text-base" block onClick={submitStart}>
-            시작 위치 제출
-          </Button>
-        </section>
-      )}
-
       {phase === "move" && currentMoveTerm && (
         <section className="rounded-[1.9rem] border border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.95))] p-5 shadow-[0_16px_32px_rgba(245,158,11,0.08)]">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
             지금 단계
           </p>
           <h2 className="mt-2 font-[var(--font-display)] text-[2.3rem] leading-none tracking-[-0.05em] text-[var(--ink-strong)] md:text-[2.8rem]">
-            강조된 항 점프
+            토끼 점프
           </h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                출발
+              </p>
+              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
+                {problem.terms[0]}
+              </p>
+            </div>
+            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                이번 항
+              </p>
+              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
+                {currentMoveTerm}
+              </p>
+            </div>
+            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                방향
+              </p>
+              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
+                {currentMoveTerm.startsWith("-") ? "왼쪽" : "오른쪽"}
+              </p>
+            </div>
+            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                칸 수
+              </p>
+              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
+                {rationalToString(absRational(parseRational(currentMoveTerm)))}
+              </p>
+            </div>
+          </div>
           <div className="mt-5">
             <ExpressionRibbon
               segments={finalExpressionSegments}

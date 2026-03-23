@@ -87,6 +87,19 @@ function RabbitMarker({ tone }: { tone: "current" | "preview" }) {
           isPreview ? "bg-[var(--sun)]" : "bg-[var(--sea)]",
         )}
       />
+      <span className="absolute left-[0.85rem] top-[3.35rem] h-1.5 w-7 rounded-full bg-[rgba(21,37,54,0.1)] blur-[1px]" />
+    </div>
+  );
+}
+
+function CarrotMarker() {
+  return (
+    <div className="carrot-bob relative h-11 w-11">
+      <span className="absolute left-[1.25rem] top-0 h-4 w-[0.32rem] rotate-[-18deg] rounded-full bg-emerald-400" />
+      <span className="absolute left-[1.6rem] top-0 h-4 w-[0.32rem] rotate-[18deg] rounded-full bg-emerald-500" />
+      <span className="absolute left-[1.1rem] top-[0.55rem] h-8 w-5 rotate-[24deg] rounded-[1rem] bg-[linear-gradient(180deg,#fb923c,#ea580c)] shadow-[0_10px_16px_rgba(234,88,12,0.18)]" />
+      <span className="absolute left-[1.55rem] top-[1.45rem] h-[0.12rem] w-2 rotate-[24deg] bg-white/60" />
+      <span className="absolute left-[1.35rem] top-[2.15rem] h-[0.12rem] w-2 rotate-[24deg] bg-white/60" />
     </div>
   );
 }
@@ -106,7 +119,7 @@ export function NumberLine({
   const zero = { numerator: 0, denominator: 1 };
 
   return (
-    <div className="overflow-x-auto pb-2">
+    <div className="overflow-x-auto rounded-[1.7rem] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,237,225,0.96))] px-3 pb-2 pt-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
       <div
         className="grid min-w-[760px] items-end gap-0"
         style={{
@@ -137,18 +150,19 @@ export function NumberLine({
               )}
             >
               <div className="mb-2 flex h-14 items-center justify-center">
-                {isTarget && (
-                  <div className="absolute h-10 w-10 rounded-full border-2 border-dashed border-[var(--sun)]/70" />
-                )}
+                {isTarget && <CarrotMarker />}
                 {isCurrent && <RabbitMarker tone="current" />}
                 {isPreview && <RabbitMarker tone="preview" />}
               </div>
               <div
                 className={cn(
-                  "h-12 w-px bg-[var(--line-strong)] transition",
-                  isCurrent || isPreview ? "bg-[var(--sun)]" : undefined,
+                  "h-12 w-px transition",
+                  isCurrent || isPreview
+                    ? "bg-[var(--sun)]"
+                    : "bg-[rgba(47,124,121,0.28)]",
                 )}
               />
+              <div className="absolute bottom-[2.45rem] left-[calc(50%-22px)] h-[0.18rem] w-11 rounded-full bg-[rgba(47,124,121,0.18)]" />
               <div
                 className={cn(
                   "mt-2 min-h-10 text-xs font-medium text-[var(--ink-soft)]",
