@@ -559,7 +559,6 @@ export function RabbitParserChallenge({
               tick={tick}
               current={currentPosition}
               preview={previewPosition}
-              target={moveTargets[moveIndex]}
             />
           </div>
 
