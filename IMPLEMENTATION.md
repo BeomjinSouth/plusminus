@@ -117,6 +117,7 @@ type Problem = {
 ```
 
 - `supports` 는 모든 문항에서 `["rabbit-sign-parser"]` 만 가진다.
+- `rawSplit` 은 원본 레코드 문자열이 아니라 학생 화면에 노출된 `expression` 기준으로 맞춘다.
 
 ---
 

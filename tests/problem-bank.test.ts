@@ -32,4 +32,14 @@ describe("problem bank", () => {
       expect(problem.rawSplit.length).toBe(problem.terms.length);
     });
   });
+
+  it("matches split answers to the displayed expression", () => {
+    const lowProblems = getProblemsByDifficulty("low");
+    const leadingPositiveProblem = lowProblems.find((problem) => problem.id === "L01");
+
+    expect(leadingPositiveProblem).toMatchObject({
+      expression: "3+(+2)",
+      rawSplit: ["3", "+(+2)"],
+    });
+  });
 });

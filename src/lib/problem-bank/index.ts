@@ -7,12 +7,14 @@ import type { Difficulty, Problem, ProblemRecord } from "@/lib/types";
 const problemBankRecord = rawProblemBank as Record<Difficulty, ProblemRecord[]>;
 
 function normalizeProblemRecord(record: ProblemRecord): Problem {
+  const expression = unwrapLeadingSimpleTerm(record.expression);
+
   return {
     id: record.id,
-    expression: unwrapLeadingSimpleTerm(record.expression),
+    expression,
     rawSplit:
       record.raw_split?.map((segment) => normalizeMathText(segment)) ??
-      splitExpressionIntoTerms(record.expression),
+      splitExpressionIntoTerms(expression),
     terms: record.terms.map((term) => normalizeMathText(term)),
     answer: normalizeMathText(record.answer),
     intermediateSums: record.intermediateSums.map((value) =>
