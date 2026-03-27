@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildSignedTermFromInput,
   buildFinalExpression,
+  normalizeUnsignedRationalInput,
   parseSignedSegment,
   splitExpressionIntoTerms,
   tokenizeExpressionForSplitView,
@@ -49,5 +51,11 @@ describe("expression helpers", () => {
   it("normalizes nested signs correctly", () => {
     expect(rationalToString(parseSignedSegment("-(+3/4)").value)).toBe("-3/4");
     expect(rationalToString(parseSignedSegment("-(-5/4)").value)).toBe("5/4");
+  });
+
+  it("separates sign choice from magnitude input", () => {
+    expect(normalizeUnsignedRationalInput("-2/3")).toBe("2/3");
+    expect(buildSignedTermFromInput("+", "2.50")).toBe("+5/2");
+    expect(buildSignedTermFromInput("-", "-3/4")).toBe("-3/4");
   });
 });

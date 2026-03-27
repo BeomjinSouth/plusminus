@@ -8,8 +8,10 @@ import { ExpressionSplitter } from "@/components/game/rabbit-parser/expression-s
 import { NumberLine } from "@/components/number-line/number-line";
 import {
   buildFinalExpression,
+  buildSignedTermFromInput,
   getFinalExpressionSegments,
   normalizeSegmentList,
+  normalizeUnsignedRationalInput,
   splitByGapSelection,
 } from "@/lib/expression";
 import {
@@ -44,6 +46,34 @@ const phaseOrder = [
 ] as const;
 
 type RabbitPhase = (typeof phaseOrder)[number]["key"];
+
+type NormalizeEntry = {
+  sign: "+" | "-" | null;
+  magnitude: string;
+};
+
+function createEmptyNormalizeEntries(length: number): NormalizeEntry[] {
+  return Array.from({ length }, () => ({
+    sign: null,
+    magnitude: "",
+  }));
+}
+
+function formatNormalizeEntryForAttempt(entry: NormalizeEntry) {
+  return `${entry.sign ?? "?"}${entry.magnitude || "?"}`;
+}
+
+function getNormalizeEntryPreview(entry: NormalizeEntry) {
+  if (!entry.sign || !entry.magnitude) {
+    return null;
+  }
+
+  try {
+    return buildSignedTermFromInput(entry.sign, entry.magnitude);
+  } catch {
+    return null;
+  }
+}
 
 function ExpressionRibbon({
   segments,
@@ -83,8 +113,8 @@ export function RabbitParserChallenge({
 }: RabbitParserChallengeProps) {
   const [phase, setPhase] = useState<RabbitPhase>("split");
   const [selectedGaps, setSelectedGaps] = useState<number[]>([]);
-  const [normalizedInputs, setNormalizedInputs] = useState<string[]>(
-    Array.from({ length: problem.rawSplit.length }, () => ""),
+  const [normalizeEntries, setNormalizeEntries] = useState<NormalizeEntry[]>(
+    () => createEmptyNormalizeEntries(problem.rawSplit.length),
   );
   const [finalExpressionInput, setFinalExpressionInput] = useState("");
   const [moveIndex, setMoveIndex] = useState(0);
@@ -209,7 +239,8 @@ export function RabbitParserChallenge({
     setPhase("normalize");
     setFeedback({
       tone: "success",
-      message: "좋아요. 이제 각 항의 부호와 전체 최종 식을 적어 보세요.",
+      message:
+        "좋아요. 각 항마다 부호 버튼을 고르고 숫자 칸에 크기를 쓴 뒤, 아래 최종 식도 적어 보세요.",
     });
   }
 
@@ -217,11 +248,21 @@ export function RabbitParserChallenge({
     const stepId = "normalize-signs";
     const attemptNo = nextAttempt(stepId);
     const responseTimeMs = Date.now() - startedAtRef.current;
+    const rawTermEntries = normalizeEntries.map(formatNormalizeEntryForAttempt);
+    let submittedTerms: string[] = [];
     let areTermsCorrect = true;
 
     try {
+      submittedTerms = normalizeEntries.map((entry) => {
+        if (!entry.sign) {
+          throw new Error("Missing sign");
+        }
+
+        return buildSignedTermFromInput(entry.sign, entry.magnitude);
+      });
+
       problem.terms.forEach((expected, index) => {
-        const actual = parseRational(normalizedInputs[index] ?? "");
+        const actual = parseRational(submittedTerms[index] ?? "");
         const target = parseRational(expected);
         if (!equalsRational(actual, target)) {
           areTermsCorrect = false;
@@ -239,7 +280,7 @@ export function RabbitParserChallenge({
     await onAttempt({
       stepId,
       attemptNo,
-      inputRaw: `${normalizedInputs.join(", ")} | ${finalExpressionInput}`,
+      inputRaw: `${(submittedTerms.length > 0 ? submittedTerms : rawTermEntries).join(", ")} | ${finalExpressionInput}`,
       normalizedInput: `${problem.terms.join(", ")} | ${finalExpression}`,
       isCorrect,
       responseTimeMs,
@@ -249,7 +290,7 @@ export function RabbitParserChallenge({
       setRetryCount((value) => value + 1);
       setFeedback({
         tone: "warning",
-        message: "각 항의 최종 부호를 다시 확인해 보세요.",
+        message: "부호 버튼과 숫자 칸을 다시 확인해 보세요.",
       });
       return;
     }
@@ -382,6 +423,24 @@ export function RabbitParserChallenge({
     });
   }
 
+  function updateNormalizeEntrySign(index: number, sign: "+" | "-") {
+    setNormalizeEntries((value) =>
+      value.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, sign } : entry,
+      ),
+    );
+  }
+
+  function updateNormalizeEntryMagnitude(index: number, rawValue: string) {
+    const magnitude = normalizeUnsignedRationalInput(rawValue);
+
+    setNormalizeEntries((value) =>
+      value.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, magnitude } : entry,
+      ),
+    );
+  }
+
   return (
     <div className="grid gap-4">
       <div className="grid gap-3 sm:grid-cols-5">
@@ -461,27 +520,75 @@ export function RabbitParserChallenge({
           <h2 className="mt-2 font-[var(--font-display)] text-[2.3rem] leading-none tracking-[-0.05em] text-[var(--ink-strong)] md:text-[2.8rem]">
             항과 최종 식 정리
           </h2>
+          <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
+            먼저 <span className="font-semibold text-[var(--ink-strong)]">+</span> 또는{" "}
+            <span className="font-semibold text-[var(--ink-strong)]">-</span> 를 고르고,
+            숫자 칸에는 부호 없이 크기만 적어 주세요.
+          </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {problem.rawSplit.map((segment, index) => (
-              <div
-                key={segment}
-                className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
-              >
+            {problem.rawSplit.map((segment, index) => {
+              const entry = normalizeEntries[index];
+              const previewTerm = entry ? getNormalizeEntryPreview(entry) : null;
+
+              return (
+                <div
+                  key={segment}
+                  className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
+                >
                 <p className="text-sm font-semibold text-[var(--ink-soft)]">{segment}</p>
+                <div className="mt-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                    부호
+                  </p>
+                  <div className="mt-2 flex gap-2">
+                    {(["+", "-"] as const).map((sign) => {
+                      const isActive = entry?.sign === sign;
+
+                      return (
+                        <button
+                          key={sign}
+                          type="button"
+                          aria-pressed={isActive}
+                          onClick={() => updateNormalizeEntrySign(index, sign)}
+                          className={`min-w-14 rounded-[1rem] border px-4 py-3 text-lg font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                            isActive
+                              ? "border-amber-300 bg-amber-100 text-amber-950"
+                              : "border-[var(--line)] bg-white text-[var(--ink-strong)] hover:border-amber-200 hover:bg-amber-50"
+                          }`}
+                        >
+                          {sign}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                  숫자
+                </p>
                 <input
-                  value={normalizedInputs[index]}
+                  value={entry?.magnitude ?? ""}
                   onChange={(event) =>
-                    setNormalizedInputs((value) =>
-                      value.map((item, itemIndex) =>
-                        itemIndex === index ? event.target.value : item,
-                      ),
-                    )
+                    updateNormalizeEntryMagnitude(index, event.target.value)
                   }
-                  className="field mt-3"
-                  placeholder={index === 0 ? "예: -4" : "예: -3 또는 +5"}
+                  className="field mt-4"
+                  inputMode="text"
+                  placeholder="예: 4, 2/3, 1.5"
                 />
+                <p className="mt-3 text-xs font-medium leading-6 text-[var(--ink-soft)]">
+                  {previewTerm ? (
+                    <>
+                      선택한 항{" "}
+                      <span className="font-mono text-[var(--ink-strong)]">
+                        {previewTerm}
+                      </span>
+                    </>
+                  ) : (
+                    "부호를 먼저 고르고, 숫자 칸에는 부호 없이 크기만 써요."
+                  )}
+                </p>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-4 rounded-[1.6rem] border border-[var(--line)] bg-white/92 p-4">

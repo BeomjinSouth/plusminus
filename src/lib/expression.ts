@@ -3,6 +3,7 @@ import {
   formatSignedRational,
   normalizeMathText,
   parseRational,
+  rationalToString,
   type Rational,
 } from "@/lib/rational";
 
@@ -250,4 +251,31 @@ export function parseSignedSegment(segment: string) {
     value: signedValue,
     normalizedTerm: formatSignedRational(signedValue),
   };
+}
+
+export function normalizeUnsignedRationalInput(input: string) {
+  const normalized = normalizeMathText(input);
+
+  if (normalized.startsWith("+") || normalized.startsWith("-")) {
+    return normalized.slice(1);
+  }
+
+  return normalized;
+}
+
+export function buildSignedTermFromInput(
+  sign: "+" | "-",
+  magnitudeInput: string,
+) {
+  const magnitude = normalizeUnsignedRationalInput(magnitudeInput);
+
+  if (!magnitude) {
+    throw new Error("Empty magnitude input");
+  }
+
+  const normalizedMagnitude = rationalToString(
+    absRational(parseRational(magnitude)),
+  );
+
+  return `${sign}${normalizedMagnitude}`;
 }
