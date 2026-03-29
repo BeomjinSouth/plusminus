@@ -23,13 +23,13 @@ export function FeedbackBanner({
     <div
       key={`${tone}-${animationNonce}`}
       className={cn(
-        "relative overflow-hidden rounded-2xl border px-4 py-3 text-sm leading-6",
+        "relative overflow-hidden rounded-[1.25rem] border-2 px-5 py-4 text-[1rem] font-bold leading-6 shadow-sm",
         tone === "info" &&
-          "border-[var(--line)] bg-white/80 text-[var(--ink-soft)]",
+          "border-sky-200 bg-sky-50 text-sky-800",
         tone === "success" &&
-          "feedback-success-burst border-emerald-200 bg-emerald-50 text-emerald-900 pulse-good",
+          "feedback-success-burst border-emerald-300 bg-emerald-100 text-emerald-900 pulse-good shadow-emerald-500/10",
         tone === "warning" &&
-          "border-amber-200 bg-amber-50 text-amber-950 shake-soft",
+          "border-amber-300 bg-amber-100 text-amber-950 shake-soft shadow-amber-500/10",
       )}
     >
       {tone === "success" ? (
@@ -41,7 +41,12 @@ export function FeedbackBanner({
           <span className="feedback-success-glow" />
         </>
       ) : null}
-      <span className="relative z-10">{message}</span>
+      <span className="relative z-10 flex items-center gap-3">
+        {tone === 'info' && <span className="text-2xl animate-bounce">💡</span>}
+        {tone === 'success' && <span className="text-2xl animate-bounce">🌟</span>}
+        {tone === 'warning' && <span className="text-2xl shake-soft">🤔</span>}
+        <span>{message}</span>
+      </span>
     </div>
   );
 }

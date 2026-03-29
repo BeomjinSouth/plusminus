@@ -64,10 +64,13 @@ export function StudentLoginScreen() {
     <main className="mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-10 md:px-8">
       <section className="w-full max-w-[31rem]">
         <div className="text-center">
-          <h1 className="font-[var(--font-display)] text-[2.45rem] leading-[1.1] tracking-[-0.05em] md:text-[3.2rem]">
-            정수와 유리수의
+          <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-white shadow-xl shadow-[var(--sea)]/10 -rotate-3 hover:rotate-6 transition-transform duration-300">
+            <span className="text-5xl">🐰</span>
+          </div>
+          <h1 className="font-[var(--font-display)] font-extrabold text-[2.5rem] leading-[1.15] tracking-[-0.02em] md:text-[3.5rem] text-[var(--ink-strong)] drop-shadow-sm">
+            점프 계산으로
             <br />
-            덧셈 뺄셈 연습
+            <span className="bg-gradient-to-r from-[var(--sea)] to-[var(--sun)] bg-clip-text text-transparent pb-2 inline-block">수학 완전 정복!</span> 🚀
           </h1>
         </div>
 
@@ -131,11 +134,11 @@ export function StudentLoginScreen() {
 
           <Button
             type="submit"
-            className="mt-6 rounded-[1.25rem] py-3.5 text-base"
+            className="mt-6 py-4 text-[1.1rem]"
             block
             disabled={loading}
           >
-            {loading ? "로그인 중..." : "로그인"}
+            {loading ? "출발하는 중..." : "시작하기"}
           </Button>
         </form>
       </section>

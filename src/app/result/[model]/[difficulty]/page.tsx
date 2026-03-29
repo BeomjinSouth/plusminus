@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -35,58 +35,63 @@ export default function ResultPage() {
 
   return (
     <AppFrame>
-      <section className={`panel-strong overflow-hidden rounded-[2.3rem] px-6 py-8 md:px-8 ${modelInsight.accentClass}`}>
-        <div className="flex flex-wrap items-start justify-between gap-5">
+      <section className={`panel-strong relative overflow-hidden rounded-[2.5rem] px-6 py-8 md:px-10 border-4 border-white bg-gradient-to-br from-indigo-50 to-blue-100 shadow-xl`}>
+        <div className="absolute -top-10 -right-10 text-[10rem] opacity-20 rotate-12 pointer-events-none select-none">🎉</div>
+        <div className="relative flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-white/70 bg-white/82 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sea)]">
-                Mission Complete
+              <span className="rounded-full border border-indigo-200 bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[var(--sea)] shadow-sm">
+                미션 완료 ✨
               </span>
-              <span className="rounded-full bg-[var(--ink-strong)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
-                {difficultyMissionLabels[result.difficulty]}
+              <span className="rounded-full bg-[var(--sun)] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-sm">
+                난이도: {difficultyMissionLabels[result.difficulty] || formatDifficultyLabel(result.difficulty)}
               </span>
             </div>
-            <h1 className="mt-4 font-[var(--font-display)] text-[2.7rem] leading-[1.02] tracking-[-0.05em] md:text-[4.4rem]">
-              Set Complete
+            <h1 className="mt-5 font-[var(--font-display)] text-[3rem] font-extrabold leading-[1.1] tracking-[-0.03em] md:text-[4.5rem] bg-gradient-to-br from-indigo-800 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
+              정말 잘했어요! 🥳
             </h1>
-            <p className="mt-4 text-sm leading-7 text-[var(--ink-soft)] md:text-base">
-              {toStudentSummary(session.student)}
-            </p>
-            <p className="mt-2 text-sm leading-7 text-[var(--ink-soft)] md:text-base">
-              {formatModelLabel(result.model)} · {formatDifficultyLabel(result.difficulty)}
+            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-indigo-700 shadow-sm">
+              <span className="text-xl">🙌</span> {toStudentSummary(session.student)}
             </p>
           </div>
 
-          <div className="rounded-[1.8rem] bg-[var(--ink-strong)] px-5 py-5 text-white shadow-[0_24px_42px_rgba(19,34,56,0.16)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/65">
-              Completed Mission
+          <div className="rounded-[2rem] bg-white p-6 shadow-xl border-4 border-indigo-100 rotate-2">
+            <p className="text-[0.75rem] font-black uppercase tracking-widest text-indigo-400">
+              오늘의 보상
             </p>
-            <p className="mt-2 font-[var(--font-display)] text-[2rem] leading-none">
-              {modelInsight.missionLabel}
-            </p>
-            <p className="mt-3 text-sm text-white/80">{modelInsight.rewardLabel}</p>
+            <div className="mt-3 flex items-center gap-4">
+              <div className="text-5xl animate-bounce">🥕</div>
+              <div>
+                <p className="font-[var(--font-display)] text-[2.2rem] font-bold text-[var(--ink-strong)] leading-none">
+                  당근 {result.correctCount}개 획득
+                </p>
+                <p className="mt-2 text-sm font-bold text-amber-500">
+                  {modelInsight.rewardLabel || "토끼가 배불리 먹었어요!"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="mt-6 grid gap-4 md:grid-cols-3">
-        <StatPill label="Correct" value={`${result.correctCount}`} />
-        <StatPill label="Retries" value={`${result.retryCount}`} accent="sun" />
-        <StatPill label="Best Streak" value={`${result.bestStreak}`} accent="berry" />
+        <StatPill label="맞은 문제" value={`${result.correctCount}개`} />
+        <StatPill label="다시 시도한 횟수" value={`${result.retryCount}번`} accent="sun" />
+        <StatPill label="최고 연속 정답" value={`${result.bestStreak}번 연속`} accent="berry" />
       </section>
 
-      <section className="mt-6 flex flex-wrap gap-3">
+      <section className="mt-8 flex flex-wrap gap-4">
         <Link
           href={`/play/${params.model}/${params.difficulty}`}
-          className="rounded-full bg-[var(--sun)] px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(217,119,44,0.22)]"
+          className="rounded-full bg-[var(--sun)] px-8 py-4 text-[1.1rem] font-bold text-white shadow-lg transition-transform hover:-translate-y-1 hover:brightness-110 active:scale-95 border-b-4 border-orange-500"
         >
-          Retry Set
+          🔄 같은 난이도로 다시 하기
         </Link>
         <Link
           href="/lobby"
-          className="rounded-full border border-[var(--line-strong)] bg-white/84 px-6 py-3 text-sm font-semibold text-[var(--ink-strong)]"
+          className="rounded-full border-2 border-[var(--sea)] bg-white px-8 py-4 text-[1.1rem] font-bold text-[var(--sea)] shadow-lg transition-transform hover:-translate-y-1 hover:bg-sky-50 active:scale-95 border-b-4 border-[color:color-mix(in_srgb,var(--sea),black_20%)]"
         >
-          Choose Difficulty
+          🏠 다른 난이도 고르기
         </Link>
       </section>
     </AppFrame>

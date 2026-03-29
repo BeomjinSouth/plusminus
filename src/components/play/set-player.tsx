@@ -153,43 +153,46 @@ export function SetPlayer({
   }
 
   return (
-    <section className="grid gap-4">
-      <div className="rounded-[2rem] border border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.94))] p-5 shadow-[0_20px_40px_rgba(245,158,11,0.12)] md:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+    <section className="grid gap-6">
+      <div className="rounded-[2.5rem] border-4 border-white bg-gradient-to-b from-blue-50 to-indigo-50 p-6 shadow-xl md:p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-amber-700">
-              문제 {problemIndex + 1} / {problems.length}
-            </p>
-            <h1 className="mt-3 font-[var(--font-display)] text-[3rem] leading-none tracking-[-0.06em] text-[var(--ink-strong)] md:text-[4rem]">
+            <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-bold text-indigo-700 shadow-sm mb-3">
+              <span>🎯</span>
+              <span>문제 {problemIndex + 1} / {problems.length}</span>
+            </div>
+            <h1 className="font-[var(--font-display)] text-[3.5rem] font-bold leading-none tracking-[-0.04em] text-[var(--ink-strong)] md:text-[4.5rem] drop-shadow-sm">
               {problem.expression}
             </h1>
           </div>
           {isFinishing && (
-            <div className="rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white">
-              결과 저장 중
+            <div className="animate-pulse rounded-full bg-[var(--sun)] px-5 py-2.5 text-sm font-bold text-white shadow-md">
+              결과 저장 중 🚀
             </div>
           )}
         </div>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-4">
+        <div className="mt-6 grid gap-3 md:grid-cols-4">
           {jumpSteps.map((step, index) => (
             <div
               key={step}
-              className="rounded-[1.35rem] border border-amber-100 bg-white/88 px-4 py-4"
+              className="relative overflow-hidden rounded-[1.5rem] border-2 border-white bg-white/60 p-4 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-1"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
-                해야 할 일 {index + 1}
+              <div className="absolute -right-2 -bottom-2 text-4xl opacity-[0.05]">🐰</div>
+              <p className="text-[0.75rem] font-black uppercase tracking-widest text-indigo-400">
+                STEP {index + 1}
               </p>
-              <p className="mt-2 text-base font-semibold text-[var(--ink-strong)]">
+              <p className="mt-1 text-lg font-bold text-[var(--ink-strong)]">
                 {step}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-amber-100">
+        <div className="mt-6 h-4 w-full overflow-hidden rounded-full bg-white/80 shadow-inner border border-indigo-100 p-1">
           <div
-            className="h-full rounded-full bg-amber-500 transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 shadow-sm transition-all duration-500 ease-out"
             style={{ width: `${progressPercent}%` }}
           />
         </div>

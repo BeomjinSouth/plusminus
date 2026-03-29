@@ -452,26 +452,32 @@ export function RabbitParserChallenge({
           return (
             <div
               key={item.key}
-              className={`rounded-[1.35rem] border px-4 py-4 ${
+              className={`relative overflow-hidden rounded-[1.5rem] border-2 px-4 py-4 transition-all duration-300 ${
                 isActive
-                  ? "border-amber-300 bg-amber-50"
+                  ? "border-[var(--sea)] bg-[var(--bg-paper)] shadow-md -translate-y-1"
                   : isDone
-                    ? "border-emerald-200 bg-emerald-50"
-                    : "border-[var(--line)] bg-white/88"
+                    ? "border-[var(--grass)] bg-emerald-50 opacity-80"
+                    : "border-white bg-white/60"
               }`}
             >
+              {isActive && (
+                <div className="absolute top-0 right-0 p-2 text-2xl animate-bounce">📍</div>
+              )}
+              {isDone && (
+                <div className="absolute top-0 right-0 p-2 text-xl opacity-50">✅</div>
+              )}
               <p
-                className={`text-xs font-semibold uppercase tracking-[0.16em] ${
+                className={`text-[0.7rem] font-black uppercase tracking-widest ${
                   isActive
-                    ? "text-amber-700"
+                    ? "text-[var(--sea)]"
                     : isDone
-                      ? "text-emerald-700"
+                      ? "text-[var(--grass)]"
                       : "text-[var(--ink-soft)]"
                 }`}
               >
                 {isDone ? "완료" : isActive ? "지금" : "다음"}
               </p>
-              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
+              <p className="mt-1 text-lg font-bold text-[var(--ink-strong)]">
                 {item.label}
               </p>
             </div>
@@ -482,11 +488,11 @@ export function RabbitParserChallenge({
       <FeedbackBanner tone={feedback.tone} message={feedback.message} />
 
       {phase === "split" && (
-        <section className="rounded-[1.9rem] border border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.95))] p-5 shadow-[0_16px_32px_rgba(245,158,11,0.08)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
-            지금 단계
+        <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-blue-50 to-cyan-50 p-6 shadow-xl md:p-8">
+          <p className="inline-block rounded-full bg-cyan-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-cyan-700">
+            STEP 1 ✂️
           </p>
-          <h2 className="mt-2 font-[var(--font-display)] text-[2.3rem] leading-none tracking-[-0.05em] text-[var(--ink-strong)] md:text-[2.8rem]">
+          <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
             식을 톡 잘라보기
           </h2>
           <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
@@ -513,11 +519,11 @@ export function RabbitParserChallenge({
       )}
 
       {phase === "normalize" && (
-        <section className="rounded-[1.9rem] border border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.95))] p-5 shadow-[0_16px_32px_rgba(245,158,11,0.08)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
-            지금 단계
+        <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-indigo-50 to-purple-50 p-6 shadow-xl md:p-8">
+          <p className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-indigo-700">
+            STEP 2 🔧
           </p>
-          <h2 className="mt-2 font-[var(--font-display)] text-[2.3rem] leading-none tracking-[-0.05em] text-[var(--ink-strong)] md:text-[2.8rem]">
+          <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
             항과 최종 식 정리
           </h2>
           <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
@@ -612,11 +618,11 @@ export function RabbitParserChallenge({
       )}
 
       {phase === "move" && currentMoveTerm && (
-        <section className="rounded-[1.9rem] border border-amber-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.95))] p-5 shadow-[0_16px_32px_rgba(245,158,11,0.08)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
-            지금 단계
+        <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-emerald-50 to-teal-50 p-6 shadow-xl md:p-8">
+          <p className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-emerald-700">
+            STEP 3 🐰
           </p>
-          <h2 className="mt-2 font-[var(--font-display)] text-[2.3rem] leading-none tracking-[-0.05em] text-[var(--ink-strong)] md:text-[2.8rem]">
+          <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
             토끼 점프
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-4">
@@ -699,11 +705,11 @@ export function RabbitParserChallenge({
       )}
 
       {phase === "result" && (
-        <section className="rounded-[1.9rem] border border-emerald-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(236,253,245,0.94))] p-5 shadow-[0_16px_32px_rgba(16,185,129,0.08)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
-            지금 단계
+        <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-xl md:p-8">
+          <p className="inline-block rounded-full bg-orange-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-orange-700">
+            STEP 4 🏆
           </p>
-          <h2 className="mt-2 font-[var(--font-display)] text-[2.3rem] leading-none tracking-[-0.05em] text-[var(--ink-strong)] md:text-[2.8rem]">
+          <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
             마지막 답 적기
           </h2>
           <div className="mt-5">

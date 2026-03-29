@@ -18,16 +18,16 @@ export function Button({
   return (
     <button
       className={cn(
-        "rounded-[1.15rem] px-4 py-3 text-sm font-semibold tracking-[-0.01em] transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-paper)] disabled:cursor-not-allowed disabled:opacity-50",
+        "rounded-full px-5 py-3 text-[15px] font-bold tracking-[-0.01em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--sea)] focus-visible:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95",
         block && "w-full",
         tone === "primary" &&
-          "bg-[var(--sun)] text-white shadow-[0_16px_30px_rgba(217,119,44,0.22)] hover:-translate-y-0.5 hover:brightness-[1.02]",
+          "border-b-4 border-[color:color-mix(in_srgb,var(--sun),black_15%)] bg-[var(--sun)] text-white shadow-md hover:-translate-y-1 hover:brightness-110 active:border-b-0 active:translate-y-1",
         tone === "secondary" &&
-          "bg-[var(--sea)] text-white shadow-[0_16px_30px_rgba(47,124,121,0.2)] hover:-translate-y-0.5 hover:brightness-[1.02]",
+          "border-b-4 border-[color:color-mix(in_srgb,var(--sea),black_20%)] bg-[var(--sea)] text-white shadow-md hover:-translate-y-1 hover:brightness-110 active:border-b-0 active:translate-y-1",
         tone === "ghost" &&
-          "border border-[var(--line-strong)] bg-white/80 text-[var(--ink-strong)] hover:border-[var(--sea)] hover:bg-white",
+          "border-2 border-[var(--line-strong)] bg-white/90 text-[var(--ink-strong)] hover:border-[var(--sea)] hover:bg-white active:translate-y-1",
         tone === "danger" &&
-          "bg-[var(--berry)] text-white shadow-[0_16px_30px_rgba(181,82,67,0.2)] hover:-translate-y-0.5 hover:brightness-[1.02]",
+          "border-b-4 border-[color:color-mix(in_srgb,var(--berry),black_20%)] bg-[var(--berry)] text-white shadow-md hover:-translate-y-1 hover:brightness-110 active:border-b-0 active:translate-y-1",
         className,
       )}
       {...props}
