@@ -42,18 +42,6 @@ export function ExpressionSplitter({
 
   return (
     <div className="rounded-[2.2rem] border border-[var(--line)] bg-white/84 p-5 shadow-[0_18px_38px_rgba(19,34,56,0.06)] md:p-6">
-      <div className="mb-5 flex flex-wrap items-center gap-2">
-        <span className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black text-[var(--ink-soft)]">
-          블록 사이 빈칸을 눌러보세요!
-        </span>
-        <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
-          선택한 끊기 {selectedGaps.length}곳
-        </span>
-        <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--ink-soft)]">
-          현재 {previewSegments.length}조각
-        </span>
-      </div>
-
       <div className="overflow-x-auto pb-2">
         <div className="min-w-max rounded-[2rem] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,244,238,0.96))] px-4 py-5 shadow-[0_16px_30px_rgba(19,34,56,0.05)] md:px-5 md:py-6">
           <div className="flex items-center">

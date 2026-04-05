@@ -162,7 +162,7 @@ export function NumberLine({
                     : "bg-[rgba(47,124,121,0.28)]",
                 )}
               />
-              <div className="absolute bottom-[2.45rem] left-[calc(50%-22px)] h-[0.18rem] w-11 rounded-full bg-[rgba(47,124,121,0.18)]" />
+              <div className="absolute bottom-[2.45rem] left-0 h-[0.18rem] w-full bg-[rgba(47,124,121,0.18)]" />
               <div
                 className={cn(
                   "mt-2 min-h-10 text-xs font-medium text-[var(--ink-soft)]",

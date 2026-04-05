@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/common/button";
-import { FeedbackBanner } from "@/components/common/feedback-banner";
 import { ExpressionSplitter } from "@/components/game/rabbit-parser/expression-splitter";
 import { NumberLine } from "@/components/number-line/number-line";
 import {
@@ -42,7 +41,6 @@ const phaseOrder = [
   { key: "split", label: "1. 끊기" },
   { key: "normalize", label: "2. 정리" },
   { key: "move", label: "3. 점프" },
-  { key: "result", label: "4. 답" },
 ] as const;
 
 type RabbitPhase = (typeof phaseOrder)[number]["key"];
@@ -83,17 +81,17 @@ function ExpressionRibbon({
   activeIndex?: number;
 }) {
   return (
-    <div className="rounded-[1.55rem] border border-[var(--line)] bg-white/88 p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+    <div className="rounded-[1.55rem] border border-[var(--line)] bg-white/95 p-6 shadow-sm">
+      <p className="text-center text-sm font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
         최종 식
       </p>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
         {segments.map((segment, index) => (
           <span
             key={`${segment}-${index}`}
-            className={`rounded-[1.1rem] border px-3 py-2 font-mono text-base font-black transition ${
+            className={`rounded-[1.2rem] border-2 px-4 py-3 font-mono text-xl sm:text-2xl md:text-3xl font-black transition-all ${
               activeIndex === index
-                ? "border-amber-300 bg-amber-100 text-amber-950 shadow-[0_12px_24px_rgba(245,158,11,0.16)]"
+                ? "border-amber-400 bg-amber-100 text-amber-950 shadow-[0_8px_16px_rgba(245,158,11,0.2)] scale-110 z-10"
                 : "border-[var(--line)] bg-white text-[var(--ink-strong)]"
             }`}
           >
@@ -119,10 +117,10 @@ export function RabbitParserChallenge({
   const [finalExpressionInput, setFinalExpressionInput] = useState("");
   const [moveIndex, setMoveIndex] = useState(0);
   const [currentPosition, setCurrentPosition] = useState<Rational>(
-    parseRational(problem.terms[0]),
+    parseRational("0"),
   );
   const [previewPosition, setPreviewPosition] = useState<Rational>(
-    parseRational(problem.terms[0]),
+    parseRational("0"),
   );
   const [resultInput, setResultInput] = useState("");
   const [retryCount, setRetryCount] = useState(0);
@@ -152,10 +150,10 @@ export function RabbitParserChallenge({
   );
   const startValue = useMemo(() => parseRational(problem.terms[0]), [problem.terms]);
   const moveTargets = useMemo(
-    () => problem.intermediateSums.slice(1).map((value) => parseRational(value)),
+    () => problem.intermediateSums.map((value) => parseRational(value)),
     [problem.intermediateSums],
   );
-  const currentMoveTermIndex = moveIndex + 1;
+  const currentMoveTermIndex = moveIndex;
   const currentMoveTerm =
     phase === "move" && currentMoveTermIndex < problem.terms.length
       ? problem.terms[currentMoveTermIndex]
@@ -166,7 +164,7 @@ export function RabbitParserChallenge({
   }, [phase, moveIndex]);
 
   useEffect(() => {
-    if (phase !== "move") {
+    if (phase !== "move" || !currentMoveTerm) {
       return;
     }
 
@@ -201,7 +199,7 @@ export function RabbitParserChallenge({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [phase, tick, lineMin, lineMax, moveIndex]);
+  }, [phase, tick, lineMin, lineMax, moveIndex, currentMoveTerm]);
 
   function nextAttempt(stepId: string) {
     const next = (attemptMapRef.current[stepId] ?? 0) + 1;
@@ -305,23 +303,21 @@ export function RabbitParserChallenge({
       return;
     }
 
-    setCurrentPosition(startValue);
-    setPreviewPosition(startValue);
+    setCurrentPosition(parseRational("0"));
+    setPreviewPosition(parseRational("0"));
 
+    setPhase("move");
     if (moveTargets.length === 0) {
-      setPhase("result");
       setFeedback({
         tone: "success",
         message: "출발 위치를 잘 찾았어요. 이제 마지막 답만 적으면 됩니다.",
       });
-      return;
+    } else {
+      setFeedback({
+        tone: "success",
+        message: "식을 잘 정리했어요! 이제 토끼를 순서대로 하나씩 점프시켜 보세요.",
+      });
     }
-
-    setPhase("move");
-    setFeedback({
-      tone: "success",
-      message: "토끼가 첫 번째 항 위치로 갔어요. 이제 다음 항부터 점프하세요.",
-    });
   }
 
   async function submitMove() {
@@ -356,21 +352,19 @@ export function RabbitParserChallenge({
     }
 
     setCurrentPosition(previewPosition);
+    setMoveIndex((value) => value + 1);
 
     if (moveIndex === moveTargets.length - 1) {
-      setPhase("result");
       setFeedback({
         tone: "success",
-        message: "마지막 점프까지 맞았어요. 이제 답만 적으면 됩니다.",
+        message: "마지막 점프까지 맞았어요. 이제 답을 적어 주세요.",
       });
-      return;
+    } else {
+      setFeedback({
+        tone: "success",
+        message: "좋아요. 다음 강조 항으로 이어서 점프해 보세요.",
+      });
     }
-
-    setMoveIndex((value) => value + 1);
-    setFeedback({
-      tone: "success",
-      message: "좋아요. 다음 강조 항으로 이어서 점프해 보세요.",
-    });
   }
 
   async function submitResult() {
@@ -425,25 +419,38 @@ export function RabbitParserChallenge({
 
   function updateNormalizeEntrySign(index: number, sign: "+" | "-") {
     setNormalizeEntries((value) =>
-      value.map((entry, entryIndex) =>
-        entryIndex === index ? { ...entry, sign } : entry,
-      ),
+      value.map((entry, entryIndex) => {
+        if (entryIndex !== index) return entry;
+
+        let newText = entry.magnitude || "";
+        if (newText.startsWith("+") || newText.startsWith("-")) {
+          newText = sign + newText.slice(1);
+        } else {
+          newText = sign + newText;
+        }
+
+        return { ...entry, sign, magnitude: newText };
+      }),
     );
   }
 
   function updateNormalizeEntryMagnitude(index: number, rawValue: string) {
-    const magnitude = normalizeUnsignedRationalInput(rawValue);
-
     setNormalizeEntries((value) =>
-      value.map((entry, entryIndex) =>
-        entryIndex === index ? { ...entry, magnitude } : entry,
-      ),
+      value.map((entry, entryIndex) => {
+        if (entryIndex !== index) return entry;
+
+        let newSign = entry.sign;
+        if (rawValue.startsWith("+")) newSign = "+";
+        if (rawValue.startsWith("-")) newSign = "-";
+
+        return { ...entry, magnitude: rawValue, sign: newSign };
+      }),
     );
   }
 
   return (
     <div className="grid gap-4">
-      <div className="grid gap-3 sm:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-4">
         {phaseOrder.map((item, index) => {
           const currentIndex = phaseOrder.findIndex((phaseItem) => phaseItem.key === phase);
           const isActive = item.key === phase;
@@ -485,8 +492,6 @@ export function RabbitParserChallenge({
         })}
       </div>
 
-      <FeedbackBanner tone={feedback.tone} message={feedback.message} />
-
       {phase === "split" && (
         <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-blue-50 to-cyan-50 p-6 shadow-xl md:p-8">
           <p className="inline-block rounded-full bg-cyan-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-cyan-700">
@@ -495,9 +500,6 @@ export function RabbitParserChallenge({
           <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
             식을 톡 잘라보기
           </h2>
-          <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
-            블록 사이 빈칸을 눌러 항이 끝나는 위치만 골라 주세요.
-          </p>
           <div className="mt-5">
             <ExpressionSplitter
               expression={problem.expression}
@@ -524,13 +526,8 @@ export function RabbitParserChallenge({
             STEP 2 🔧
           </p>
           <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
-            항과 최종 식 정리
+            값 정리하기
           </h2>
-          <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
-            먼저 <span className="font-semibold text-[var(--ink-strong)]">+</span> 또는{" "}
-            <span className="font-semibold text-[var(--ink-strong)]">-</span> 를 고르고,
-            숫자 칸에는 부호 없이 크기만 적어 주세요.
-          </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {problem.rawSplit.map((segment, index) => {
               const entry = normalizeEntries[index];
@@ -541,7 +538,7 @@ export function RabbitParserChallenge({
                   key={segment}
                   className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
                 >
-                <p className="text-sm font-semibold text-[var(--ink-soft)]">{segment}</p>
+                <p className="text-2xl font-black text-[var(--ink-strong)]">{segment}</p>
                 <div className="mt-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
                     부호
@@ -578,20 +575,8 @@ export function RabbitParserChallenge({
                   }
                   className="field mt-4"
                   inputMode="text"
-                  placeholder="예: 4, 2/3, 1.5"
+                  placeholder="예: +4, -2/3, +1.5"
                 />
-                <p className="mt-3 text-xs font-medium leading-6 text-[var(--ink-soft)]">
-                  {previewTerm ? (
-                    <>
-                      선택한 항{" "}
-                      <span className="font-mono text-[var(--ink-strong)]">
-                        {previewTerm}
-                      </span>
-                    </>
-                  ) : (
-                    "부호를 먼저 고르고, 숫자 칸에는 부호 없이 크기만 써요."
-                  )}
-                </p>
               </div>
               );
             })}
@@ -605,10 +590,6 @@ export function RabbitParserChallenge({
               className="field mt-3"
               placeholder={finalExpression}
             />
-            <p className="mt-3 text-xs font-medium leading-6 text-[var(--ink-soft)]">
-              첫 번째 항은 괄호 없이 쓰고, 뒤 음수 항은 <span className="font-mono">+(-3)</span>
-              처럼 적어요.
-            </p>
           </div>
 
           <Button className="mt-5 py-4 text-base" block onClick={submitNormalize}>
@@ -617,116 +598,96 @@ export function RabbitParserChallenge({
         </section>
       )}
 
-      {phase === "move" && currentMoveTerm && (
+      {phase === "move" && (
         <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-emerald-50 to-teal-50 p-6 shadow-xl md:p-8">
           <p className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-emerald-700">
             STEP 3 🐰
           </p>
           <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
-            토끼 점프
+            {currentMoveTerm ? "토끼 점프" : "최종 답안 작성"}
           </h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-4">
-            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                출발
-              </p>
-              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
-                {problem.terms[0]}
-              </p>
-            </div>
-            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                이번 항
-              </p>
-              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
-                {currentMoveTerm}
-              </p>
-            </div>
-            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                방향
-              </p>
-              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
-                {currentMoveTerm.startsWith("-") ? "왼쪽" : "오른쪽"}
-              </p>
-            </div>
-            <div className="rounded-[1.25rem] border border-amber-100 bg-white/90 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                칸 수
-              </p>
-              <p className="mt-2 text-lg font-semibold text-[var(--ink-strong)]">
-                {rationalToString(absRational(parseRational(currentMoveTerm)))}
-              </p>
-            </div>
-          </div>
-          <div className="mt-5">
-            <ExpressionRibbon
-              segments={finalExpressionSegments}
-              activeIndex={currentMoveTermIndex}
-            />
-          </div>
-          <div className="mt-5 rounded-[1.6rem] border border-[var(--line)] bg-white/90 p-4">
-            <NumberLine
-              min={lineMin}
-              max={lineMax}
-              tick={tick}
-              current={currentPosition}
-              preview={previewPosition}
-            />
-          </div>
+          {currentMoveTerm ? (
+            <>
+              <div className="mt-6 mb-6">
+                <ExpressionRibbon
+                  segments={finalExpressionSegments}
+                  activeIndex={currentMoveTermIndex}
+                />
+              </div>
+              <div className="mt-5 rounded-[1.6rem] border border-[var(--line)] bg-white/90 p-4">
+                <NumberLine
+                  min={lineMin}
+                  max={lineMax}
+                  tick={tick}
+                  current={currentPosition}
+                  preview={previewPosition}
+                />
+              </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <Button
-              tone="ghost"
-              block
-              className="bg-white py-4 text-base"
-              onClick={() => movePreview("left")}
-            >
-              왼쪽 1칸
-            </Button>
-            <Button
-              tone="ghost"
-              block
-              className="bg-white py-4 text-base"
-              onClick={() => movePreview("right")}
-            >
-              오른쪽 1칸
-            </Button>
-            <Button block className="py-4 text-base" onClick={submitMove}>
-              점프 확인
-            </Button>
-          </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <Button
+                  tone="ghost"
+                  block
+                  className="bg-white py-4 text-base"
+                  onClick={() => movePreview("left")}
+                >
+                  왼쪽 1칸
+                </Button>
+                <Button
+                  tone="ghost"
+                  block
+                  className="bg-white py-4 text-base"
+                  onClick={() => movePreview("right")}
+                >
+                  오른쪽 1칸
+                </Button>
+                <Button block className="py-4 text-base" onClick={submitMove}>
+                  점프 확인
+                </Button>
+              </div>
 
-          <div className="mt-4 rounded-[1.35rem] border border-dashed border-amber-200 bg-white/76 px-4 py-4 text-sm font-medium text-[var(--ink-soft)]">
-            현재 위치 {rationalToString(currentPosition)} · 토끼 위치{" "}
-            {rationalToString(previewPosition)}
-          </div>
-        </section>
-      )}
-
-      {phase === "result" && (
-        <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-xl md:p-8">
-          <p className="inline-block rounded-full bg-orange-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-orange-700">
-            STEP 4 🏆
-          </p>
-          <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
-            마지막 답 적기
-          </h2>
-          <div className="mt-5">
-            <ExpressionRibbon segments={finalExpressionSegments} />
-          </div>
-          <p className="mt-4 text-sm font-medium text-[var(--ink-soft)]">
-            토끼가 마지막에 멈춘 위치를 그대로 적어 주세요.
-          </p>
-          <input
-            value={resultInput}
-            onChange={(event) => setResultInput(event.target.value)}
-            className="field mt-5 text-lg"
-            placeholder="예: 9"
-          />
-          <Button className="mt-4 py-4 text-base" block onClick={submitResult}>
-            답 제출
-          </Button>
+              <div className="mt-4 rounded-[1.35rem] border border-dashed border-[var(--line)] bg-white/76 px-5 py-4 text-sm font-medium text-[var(--ink-soft)] flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <span>현재 위치 {rationalToString(currentPosition)} · 토끼 위치{" "}
+                {rationalToString(previewPosition)}</span>
+                <span className="inline-flex items-center gap-1.5 text-indigo-600 font-semibold bg-indigo-50/80 px-3 py-1.5 rounded-lg border border-indigo-100">
+                  <span className="text-[1.1rem]">⌨️</span> 방향키(←, →)와 Enter로 점프할 수 있어요
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mt-5">
+                <ExpressionRibbon segments={finalExpressionSegments} />
+              </div>
+              <div className="mt-5 rounded-[1.6rem] border border-[var(--line)] bg-white/90 p-4">
+                <NumberLine
+                  min={lineMin}
+                  max={lineMax}
+                  tick={tick}
+                  current={currentPosition}
+                  preview={previewPosition}
+                />
+              </div>
+              <p className="mt-4 text-sm font-medium text-[var(--ink-soft)]">
+                토끼가 마지막에 멈춘 위치를 그대로 적어 주세요.
+              </p>
+              <input
+                value={resultInput}
+                onChange={(event) => setResultInput(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    void submitResult();
+                  }
+                }}
+                className="field mt-5 text-lg"
+                placeholder="예: 9"
+              />
+              <Button className="mt-4 py-4 text-base" block onClick={submitResult}>
+                답 제출
+              </Button>
+            </>
+          )}
         </section>
       )}
     </div>

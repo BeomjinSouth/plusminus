@@ -25,8 +25,6 @@ type SetPlayerProps = {
   problems: Problem[];
 };
 
-const jumpSteps = ["식 끊기", "부호 정리", "점프하기", "답 쓰기"];
-
 export function SetPlayer({
   session,
   model,
@@ -171,23 +169,6 @@ export function SetPlayer({
               결과 저장 중 🚀
             </div>
           )}
-        </div>
-
-        <div className="mt-6 grid gap-3 md:grid-cols-4">
-          {jumpSteps.map((step, index) => (
-            <div
-              key={step}
-              className="relative overflow-hidden rounded-[1.5rem] border-2 border-white bg-white/60 p-4 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-1"
-            >
-              <div className="absolute -right-2 -bottom-2 text-4xl opacity-[0.05]">🐰</div>
-              <p className="text-[0.75rem] font-black uppercase tracking-widest text-indigo-400">
-                STEP {index + 1}
-              </p>
-              <p className="mt-1 text-lg font-bold text-[var(--ink-strong)]">
-                {step}
-              </p>
-            </div>
-          ))}
         </div>
 
         <div className="mt-6 h-4 w-full overflow-hidden rounded-full bg-white/80 shadow-inner border border-indigo-100 p-1">
