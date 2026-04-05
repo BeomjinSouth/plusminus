@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildSignedTermFromInput,
   buildFinalExpression,
+  matchesNormalizedFinalExpression,
   normalizeUnsignedRationalInput,
   parseSignedSegment,
   splitExpressionIntoTerms,
@@ -39,6 +40,37 @@ describe("expression helpers", () => {
     expect(buildFinalExpression(["+2/3", "+5/6", "-1/2"])).toBe(
       "2/3+5/6+(-1/2)",
     );
+  });
+
+  it("accepts equivalent normalized final-expression input", () => {
+    expect(matchesNormalizedFinalExpression("-4-3", ["-4", "-3"])).toBe(true);
+    expect(
+      matchesNormalizedFinalExpression("2.4 + 1.1 - 0.5", [
+        "+2.4",
+        "+1.1",
+        "-0.5",
+      ]),
+    ).toBe(true);
+    expect(
+      matchesNormalizedFinalExpression("(+2/3)+(+5/6)-1/2", [
+        "+2/3",
+        "+5/6",
+        "-1/2",
+      ]),
+    ).toBe(true);
+  });
+
+  it("rejects unresolved final-expression sign forms", () => {
+    expect(
+      matchesNormalizedFinalExpression("5-(-3)+(-2)", ["+5", "+3", "-2"]),
+    ).toBe(false);
+    expect(
+      matchesNormalizedFinalExpression("2/3-(-5/6)-(+1/2)", [
+        "+2/3",
+        "+5/6",
+        "-1/2",
+      ]),
+    ).toBe(false);
   });
 
   it("unwraps unnecessary parentheses on the leading term", () => {

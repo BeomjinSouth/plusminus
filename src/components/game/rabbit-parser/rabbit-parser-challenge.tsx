@@ -9,8 +9,8 @@ import {
   buildFinalExpression,
   buildSignedTermFromInput,
   getFinalExpressionSegments,
+  matchesNormalizedFinalExpression,
   normalizeSegmentList,
-  normalizeUnsignedRationalInput,
   splitByGapSelection,
 } from "@/lib/expression";
 import {
@@ -270,9 +270,10 @@ export function RabbitParserChallenge({
       areTermsCorrect = false;
     }
 
-    const isExpressionCorrect =
-      finalExpressionInput.trim().length > 0 &&
-      finalExpressionInput.replace(/\s+/g, "") === finalExpression;
+    const isExpressionCorrect = matchesNormalizedFinalExpression(
+      finalExpressionInput,
+      problem.terms,
+    );
     const isCorrect = areTermsCorrect && isExpressionCorrect;
 
     await onAttempt({
@@ -298,7 +299,7 @@ export function RabbitParserChallenge({
       setFeedback({
         tone: "warning",
         message:
-          "최종 식은 첫 번째 항을 앞에 두고, 뒤 음수 항은 +(-3)처럼 써 주세요.",
+          "최종 식은 첫 번째 항부터 순서대로 쓰고, 각 항의 부호가 맞는지 다시 확인해 보세요.",
       });
       return;
     }

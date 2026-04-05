@@ -1,5 +1,6 @@
 import {
   absRational,
+  equalsRational,
   formatSignedRational,
   normalizeMathText,
   parseRational,
@@ -104,6 +105,58 @@ export function getFinalExpressionSegments(terms: string[]) {
 
 export function buildFinalExpression(terms: string[]) {
   return getFinalExpressionSegments(terms).join("");
+}
+
+function parseNormalizedFinalExpressionTerm(term: string) {
+  const normalized = normalizeMathText(term);
+
+  if (!normalized) {
+    throw new Error("Empty final expression term");
+  }
+
+  if (isWrappedBySingleParentheses(normalized)) {
+    return parseRational(normalized.slice(1, -1));
+  }
+
+  try {
+    return parseRational(normalized);
+  } catch {
+    const parsed = parseSignedSegment(normalized);
+
+    if (parsed.outerSign !== 1) {
+      throw new Error("Unnormalized final expression term");
+    }
+
+    return parsed.value;
+  }
+}
+
+export function matchesNormalizedFinalExpression(
+  expression: string,
+  expectedTerms: string[],
+) {
+  const normalized = normalizeMathText(expression);
+
+  if (!normalized) {
+    return false;
+  }
+
+  try {
+    const submittedTerms = splitExpressionIntoTerms(normalized);
+
+    if (submittedTerms.length !== expectedTerms.length) {
+      return false;
+    }
+
+    return submittedTerms.every((submittedTerm, index) =>
+      equalsRational(
+        parseNormalizedFinalExpressionTerm(submittedTerm),
+        parseRational(expectedTerms[index] ?? ""),
+      ),
+    );
+  } catch {
+    return false;
+  }
 }
 
 export function unwrapLeadingSimpleTerm(expression: string) {
