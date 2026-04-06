@@ -451,6 +451,20 @@ export function RabbitParserChallenge({
 
   return (
     <div className="grid gap-4">
+      {feedback.message && (
+        <div
+          className={`rounded-[1.5rem] p-4 text-center text-sm font-bold shadow-sm transition-all animate-in fade-in slide-in-from-top-2 ${
+            feedback.tone === "info"
+              ? "bg-blue-50 text-blue-700 border border-blue-200"
+              : feedback.tone === "success"
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                : "bg-red-50 text-red-700 border border-red-200"
+          }`}
+        >
+          {feedback.message}
+        </div>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-4">
         {phaseOrder.map((item, index) => {
           const currentIndex = phaseOrder.findIndex((phaseItem) => phaseItem.key === phase);
@@ -576,7 +590,7 @@ export function RabbitParserChallenge({
                   }
                   className="field mt-4"
                   inputMode="text"
-                  placeholder="예: +4, -2/3, +1.5"
+                  placeholder="예: 4, 2/3, 1.5"
                 />
               </div>
               );
@@ -589,7 +603,7 @@ export function RabbitParserChallenge({
               value={finalExpressionInput}
               onChange={(event) => setFinalExpressionInput(event.target.value)}
               className="field mt-3"
-              placeholder={finalExpression}
+              placeholder={`예: ${finalExpression}`}
             />
           </div>
 
