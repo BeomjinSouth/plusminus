@@ -44,6 +44,9 @@ describe("expression helpers", () => {
 
   it("accepts equivalent normalized final-expression input", () => {
     expect(matchesNormalizedFinalExpression("-4-3", ["-4", "-3"])).toBe(true);
+    expect(matchesNormalizedFinalExpression("-(3)+5+7", ["-3", "+5", "+7"])).toBe(
+      true,
+    );
     expect(
       matchesNormalizedFinalExpression("2.4 + 1.1 - 0.5", [
         "+2.4",
@@ -64,6 +67,9 @@ describe("expression helpers", () => {
     expect(
       matchesNormalizedFinalExpression("5-(-3)+(-2)", ["+5", "+3", "-2"]),
     ).toBe(false);
+    expect(matchesNormalizedFinalExpression("-(+3)+5+7", ["-3", "+5", "+7"])).toBe(
+      false,
+    );
     expect(
       matchesNormalizedFinalExpression("2/3-(-5/6)-(+1/2)", [
         "+2/3",

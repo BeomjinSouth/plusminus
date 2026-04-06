@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 import { getProblemsByDifficulty } from "../src/lib/problem-bank";
 
 describe("problem bank", () => {
-  it("keeps 7 problems per difficulty", () => {
-    expect(getProblemsByDifficulty("low")).toHaveLength(7);
-    expect(getProblemsByDifficulty("medium")).toHaveLength(7);
-    expect(getProblemsByDifficulty("high")).toHaveLength(7);
+  it("keeps 3 problems per difficulty", () => {
+    expect(getProblemsByDifficulty("low")).toHaveLength(3);
+    expect(getProblemsByDifficulty("medium")).toHaveLength(3);
+    expect(getProblemsByDifficulty("high")).toHaveLength(3);
   });
 
   it("keeps mandatory regression expressions in the bank", () => {

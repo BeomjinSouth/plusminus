@@ -123,7 +123,9 @@ function parseNormalizedFinalExpressionTerm(term: string) {
   } catch {
     const parsed = parseSignedSegment(normalized);
 
-    if (parsed.outerSign !== 1) {
+    // Allow fully normalized forms like `-(3)` while still rejecting
+    // unresolved nested-sign forms such as `-(-3)` or `-(+3)`.
+    if (parsed.outerSign === -1 && parsed.hadExplicitInnerSign) {
       throw new Error("Unnormalized final expression term");
     }
 
@@ -283,6 +285,7 @@ export function parseSignedSegment(segment: string) {
 
   inner = normalizeMathText(inner);
 
+  const hadExplicitInnerSign = inner.startsWith("+") || inner.startsWith("-");
   let innerSign = 1;
   if (inner.startsWith("+")) {
     inner = inner.slice(1);
@@ -300,6 +303,7 @@ export function parseSignedSegment(segment: string) {
   return {
     outerSign,
     innerSign,
+    hadExplicitInnerSign,
     magnitude: absRational(magnitude),
     value: signedValue,
     normalizedTerm: formatSignedRational(signedValue),

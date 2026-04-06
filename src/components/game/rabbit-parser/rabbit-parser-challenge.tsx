@@ -149,14 +149,15 @@ export function RabbitParserChallenge({
     [problem.terms],
   );
   const startValue = useMemo(() => parseRational(problem.terms[0]), [problem.terms]);
+  const moveTerms = useMemo(() => problem.terms.slice(1), [problem.terms]);
   const moveTargets = useMemo(
-    () => problem.intermediateSums.map((value) => parseRational(value)),
+    () => problem.intermediateSums.slice(1).map((value) => parseRational(value)),
     [problem.intermediateSums],
   );
-  const currentMoveTermIndex = moveIndex;
+  const currentMoveTermIndex = moveIndex + 1;
   const currentMoveTerm =
-    phase === "move" && currentMoveTermIndex < problem.terms.length
-      ? problem.terms[currentMoveTermIndex]
+    phase === "move" && moveIndex < moveTerms.length
+      ? moveTerms[moveIndex]
       : undefined;
 
   useEffect(() => {
@@ -304,8 +305,10 @@ export function RabbitParserChallenge({
       return;
     }
 
-    setCurrentPosition(parseRational("0"));
-    setPreviewPosition(parseRational("0"));
+    setMoveIndex(0);
+    setResultInput("");
+    setCurrentPosition(startValue);
+    setPreviewPosition(startValue);
 
     setPhase("move");
     if (moveTargets.length === 0) {
@@ -326,7 +329,7 @@ export function RabbitParserChallenge({
       return;
     }
 
-    const stepId = `move-step-${currentMoveTermIndex + 1}`;
+    const stepId = `move-step-${moveIndex + 1}`;
     const attemptNo = nextAttempt(stepId);
     const responseTimeMs = Date.now() - startedAtRef.current;
     const expectedTarget = moveTargets[moveIndex];
