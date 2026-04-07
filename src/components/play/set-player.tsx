@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { MathText } from "@/components/common/math-text";
 import { RabbitParserChallenge } from "@/components/game/rabbit-parser/rabbit-parser-challenge";
 import { finalizeProgress, flushAttemptQueue, flushAttemptQueueWithBeacon, queueAttemptEvent } from "@/lib/logging/client-logger";
 import { saveLatestResult } from "@/lib/storage";
@@ -161,7 +162,7 @@ export function SetPlayer({
               <span>문제 {problemIndex + 1} / {problems.length}</span>
             </div>
             <h1 className="font-[var(--font-display)] text-[3.5rem] font-bold leading-none tracking-[-0.04em] text-[var(--ink-strong)] md:text-[4.5rem] drop-shadow-sm">
-              {problem.expression}
+              <MathText text={problem.expression} />
             </h1>
           </div>
           {isFinishing && (

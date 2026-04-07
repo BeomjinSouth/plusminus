@@ -5,6 +5,7 @@ import {
   rationalToString,
   type Rational,
 } from "@/lib/rational";
+import { MathText } from "@/components/common/math-text";
 import { cn } from "@/lib/utils";
 
 type NumberLineProps = {
@@ -169,7 +170,7 @@ export function NumberLine({
                   showLabel ? "opacity-100" : "opacity-20",
                 )}
               >
-                {showLabel ? rationalToString(value) : "·"}
+                {showLabel ? <MathText text={rationalToString(value)} /> : "·"}
               </div>
             </button>
           );

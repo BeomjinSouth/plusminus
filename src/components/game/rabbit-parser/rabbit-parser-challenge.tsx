@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/common/button";
 import { FeedbackBanner } from "@/components/common/feedback-banner";
+import { MathText } from "@/components/common/math-text";
 import { SuccessCelebration } from "@/components/common/success-celebration";
 import { ExpressionSplitter } from "@/components/game/rabbit-parser/expression-splitter";
 import { NumberLine } from "@/components/number-line/number-line";
@@ -107,7 +108,7 @@ function ExpressionRibbon({
                 : "border-[var(--line)] bg-white text-[var(--ink-strong)]"
             }`}
           >
-            {segment}
+            <MathText text={segment} />
           </span>
         ))}
       </div>
@@ -630,7 +631,9 @@ export function RabbitParserChallenge({
                     key={segment}
                     className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
                   >
-                    <p className="text-2xl font-black text-[var(--ink-strong)]">{segment}</p>
+                    <p className="text-2xl font-black text-[var(--ink-strong)]">
+                      <MathText text={segment} />
+                    </p>
                     <div className="mt-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
                         부호
@@ -670,7 +673,11 @@ export function RabbitParserChallenge({
                       placeholder="예: 4, 2/3, 1.5"
                     />
                     <p className="mt-3 text-sm font-semibold text-[var(--ink-soft)]">
-                      {previewTerm ? `읽힌 항: ${previewTerm}` : "부호와 숫자를 고르면 읽힌 항이 보여요."}
+                      {previewTerm ? (
+                        <>
+                          읽힌 항: <MathText text={previewTerm} />
+                        </>
+                      ) : "부호와 숫자를 고르면 읽힌 항이 보여요."}
                     </p>
                   </div>
                 );
@@ -683,7 +690,7 @@ export function RabbitParserChallenge({
                 value={finalExpressionInput}
                 onChange={(event) => setFinalExpressionInput(event.target.value)}
                 className="field mt-3"
-                placeholder={`예: ${finalExpression}`}
+                placeholder="부호를 정리한 식을 적어 보세요."
               />
               <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
                 마지막 칸에서 Enter를 눌러도 바로 제출돼요.
@@ -746,8 +753,10 @@ export function RabbitParserChallenge({
               </div>
 
               <div className="mt-4 rounded-[1.35rem] border border-dashed border-[var(--line)] bg-white/76 px-5 py-4 text-sm font-medium text-[var(--ink-soft)] flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                <span>현재 위치 {rationalToString(currentPosition)} · 토끼 위치{" "}
-                {rationalToString(previewPosition)}</span>
+                <span>
+                  현재 위치 <MathText text={rationalToString(currentPosition)} /> · 토끼 위치{" "}
+                  <MathText text={rationalToString(previewPosition)} />
+                </span>
                 <span className="inline-flex items-center gap-1.5 text-indigo-600 font-semibold bg-indigo-50/80 px-3 py-1.5 rounded-lg border border-indigo-100">
                   <span className="text-[1.1rem]">⌨️</span> 방향키(←, →)와 Enter로 점프할 수 있어요
                 </span>

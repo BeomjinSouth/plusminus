@@ -150,6 +150,48 @@ textarea {
   box-shadow: 0 0 0 4px rgba(47, 124, 121, 0.12);
 }
 
+.math-fraction {
+  display: inline-flex;
+  align-items: center;
+  margin-inline: 0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.math-fraction__sign {
+  margin-right: 0.08em;
+  line-height: 1;
+}
+
+.math-fraction__stack {
+  display: inline-flex;
+  min-width: 0.95em;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.math-fraction__top,
+.math-fraction__bottom {
+  padding-inline: 0.12em;
+  font-size: 0.58em;
+  line-height: 1;
+  text-align: center;
+}
+
+.math-fraction__top {
+  padding-bottom: 0.05em;
+}
+
+.math-fraction__bottom {
+  padding-top: 0.06em;
+}
+
+.math-fraction__bar {
+  margin-inline: 0.05em;
+  border-top: 0.08em solid currentColor;
+}
+
 .rise-in {
   animation: rise-in 0.4s ease-out;
 }

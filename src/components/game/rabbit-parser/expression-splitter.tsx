@@ -1,6 +1,7 @@
 import { Fragment, useMemo } from "react";
 import { RotateCcw, Scissors } from "lucide-react";
 
+import { MathText } from "@/components/common/math-text";
 import {
   tokenizeExpressionForSplitView,
   type SplitViewTokenType,
@@ -60,7 +61,7 @@ export function ExpressionSplitter({
                       hasGapAfter && "-translate-x-4 opacity-80",
                     )}
                   >
-                    {token.text}
+                    <MathText text={token.text} />
                   </div>
 
                   {boundaryAfter !== undefined ? (
