@@ -67,6 +67,18 @@ function formatNormalizeEntryForAttempt(entry: NormalizeEntry) {
   return `${entry.sign ?? "?"}${entry.magnitude || "?"}`;
 }
 
+function getNormalizeEntryPreview(entry: NormalizeEntry) {
+  if (!entry.sign || !entry.magnitude) {
+    return null;
+  }
+
+  try {
+    return buildSignedTermFromInput(entry.sign, entry.magnitude);
+  } catch {
+    return null;
+  }
+}
+
 function wait(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -140,6 +152,7 @@ export function RabbitParserChallenge({
   const startedAtRef = useRef(Date.now());
   const celebrationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const celebrationNonceRef = useRef(0);
+  const feedbackContainerRef = useRef<HTMLDivElement | null>(null);
 
   const tick = parseRational(problem.suggestedTick);
   const lineMin = parseRational(problem.lineMin);
@@ -175,6 +188,17 @@ export function RabbitParserChallenge({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (feedback.tone !== "warning") {
+      return;
+    }
+
+    feedbackContainerRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }, [feedback]);
 
   useEffect(() => {
     if (phase !== "move" || !currentMoveTerm) {
@@ -507,7 +531,9 @@ export function RabbitParserChallenge({
       ) : null}
 
       {feedback.message && (
-        <FeedbackBanner tone={feedback.tone} message={feedback.message} />
+        <div ref={feedbackContainerRef}>
+          <FeedbackBanner tone={feedback.tone} message={feedback.message} />
+        </div>
       )}
 
       <div className="grid gap-3 sm:grid-cols-4">
@@ -588,72 +614,86 @@ export function RabbitParserChallenge({
           <h2 className="mt-4 font-[var(--font-display)] text-[2.5rem] font-bold leading-none tracking-[-0.03em] text-[var(--ink-strong)] md:text-[3rem]">
             값 정리하기
           </h2>
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {problem.rawSplit.map((segment, index) => {
-              const entry = normalizeEntries[index];
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void submitNormalize();
+            }}
+          >
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {problem.rawSplit.map((segment, index) => {
+                const entry = normalizeEntries[index];
+                const previewTerm = entry ? getNormalizeEntryPreview(entry) : null;
 
-              return (
-                <div
-                  key={segment}
-                  className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
-                >
-                  <p className="text-2xl font-black text-[var(--ink-strong)]">{segment}</p>
-                  <div className="mt-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                      부호
-                    </p>
-                    <div className="mt-2 flex gap-2">
-                      {(["+", "-"] as const).map((sign) => {
-                        const isActive = entry?.sign === sign;
+                return (
+                  <div
+                    key={segment}
+                    className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
+                  >
+                    <p className="text-2xl font-black text-[var(--ink-strong)]">{segment}</p>
+                    <div className="mt-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                        부호
+                      </p>
+                      <div className="mt-2 flex gap-2">
+                        {(["+", "-"] as const).map((sign) => {
+                          const isActive = entry?.sign === sign;
 
-                        return (
-                          <button
-                            key={sign}
-                            type="button"
-                            aria-pressed={isActive}
-                            onClick={() => updateNormalizeEntrySign(index, sign)}
-                            className={`min-w-14 rounded-[1rem] border px-4 py-3 text-lg font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
-                              isActive
-                                ? "border-amber-300 bg-amber-100 text-amber-950"
-                                : "border-[var(--line)] bg-white text-[var(--ink-strong)] hover:border-amber-200 hover:bg-amber-50"
-                            }`}
-                          >
-                            {sign}
-                          </button>
-                        );
-                      })}
+                          return (
+                            <button
+                              key={sign}
+                              type="button"
+                              aria-pressed={isActive}
+                              onClick={() => updateNormalizeEntrySign(index, sign)}
+                              className={`min-w-14 rounded-[1rem] border px-4 py-3 text-lg font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                                isActive
+                                  ? "border-amber-300 bg-amber-100 text-amber-950"
+                                  : "border-[var(--line)] bg-white text-[var(--ink-strong)] hover:border-amber-200 hover:bg-amber-50"
+                              }`}
+                            >
+                              {sign}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                      숫자
+                    </p>
+                    <input
+                      value={entry?.magnitude ?? ""}
+                      onChange={(event) =>
+                        updateNormalizeEntryMagnitude(index, event.target.value)
+                      }
+                      className="field mt-4"
+                      inputMode="text"
+                      placeholder="예: 4, 2/3, 1.5"
+                    />
+                    <p className="mt-3 text-sm font-semibold text-[var(--ink-soft)]">
+                      {previewTerm ? `읽힌 항: ${previewTerm}` : "부호와 숫자를 고르면 읽힌 항이 보여요."}
+                    </p>
                   </div>
-                  <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                    숫자
-                  </p>
-                  <input
-                    value={entry?.magnitude ?? ""}
-                    onChange={(event) =>
-                      updateNormalizeEntryMagnitude(index, event.target.value)
-                    }
-                    className="field mt-4"
-                    inputMode="text"
-                    placeholder="예: 4, 2/3, 1.5"
-                  />
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
-          <div className="mt-4 rounded-[1.6rem] border border-[var(--line)] bg-white/92 p-4">
-            <p className="text-sm font-semibold text-[var(--ink-soft)]">최종 식</p>
-            <input
-              value={finalExpressionInput}
-              onChange={(event) => setFinalExpressionInput(event.target.value)}
-              className="field mt-3"
-              placeholder={`예: ${finalExpression}`}
-            />
-          </div>
+            <div className="mt-4 rounded-[1.6rem] border border-[var(--line)] bg-white/92 p-4">
+              <p className="text-sm font-semibold text-[var(--ink-soft)]">최종 식</p>
+              <input
+                value={finalExpressionInput}
+                onChange={(event) => setFinalExpressionInput(event.target.value)}
+                className="field mt-3"
+                placeholder={`예: ${finalExpression}`}
+              />
+              <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">
+                마지막 칸에서 Enter를 눌러도 바로 제출돼요.
+              </p>
+            </div>
 
-          <Button className="mt-5 py-4 text-base" block onClick={submitNormalize}>
-            정리 제출
-          </Button>
+            <Button type="submit" className="mt-5 py-4 text-base" block>
+              정리 제출
+            </Button>
+          </form>
         </section>
       )}
 
