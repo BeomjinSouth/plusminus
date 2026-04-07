@@ -2,7 +2,6 @@ import { Fragment, useMemo } from "react";
 import { RotateCcw, Scissors } from "lucide-react";
 
 import {
-  splitByGapSelection,
   tokenizeExpressionForSplitView,
   type SplitViewTokenType,
 } from "@/lib/expression";
@@ -35,10 +34,6 @@ export function ExpressionSplitter({
 }: ExpressionSplitterProps) {
   const tokens = useMemo(() => tokenizeExpressionForSplitView(expression), [expression]);
   const selectedGapSet = useMemo(() => new Set(selectedGaps), [selectedGaps]);
-  const previewSegments = useMemo(
-    () => splitByGapSelection(expression, selectedGaps),
-    [expression, selectedGaps],
-  );
 
   return (
     <div className="rounded-[2.2rem] border border-[var(--line)] bg-white/84 p-5 shadow-[0_18px_38px_rgba(19,34,56,0.06)] md:p-6">
@@ -100,27 +95,9 @@ export function ExpressionSplitter({
         </div>
       </div>
 
-      <div className="mt-5 rounded-[1.5rem] border border-[var(--line)] bg-white/86 px-4 py-4">
-        <p className="text-sm font-black text-[var(--ink-soft)]">미리보기</p>
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          {previewSegments.map((segment, index) => (
-            <Fragment key={`${segment}-${index}`}>
-              <span className="rounded-[1.05rem] border border-[var(--line)] bg-white px-4 py-2.5 font-mono text-sm font-black text-[var(--ink-strong)] shadow-[0_10px_18px_rgba(19,34,56,0.05)] md:text-[0.95rem]">
-                {segment}
-              </span>
-              {index < previewSegments.length - 1 ? (
-                <span aria-hidden className="text-base font-black text-[var(--ink-soft)]">
-                  /
-                </span>
-              ) : null}
-            </Fragment>
-          ))}
-        </div>
-      </div>
-
       <div
         className={cn(
-          "mt-6 transition-all duration-500",
+          "mt-5 transition-all duration-500",
           selectedGaps.length > 0
             ? "translate-y-0 opacity-100"
             : "pointer-events-none translate-y-6 opacity-0",

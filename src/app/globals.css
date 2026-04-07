@@ -189,6 +189,54 @@ textarea {
   animation: feedback-success-glow 0.3s ease-out both;
 }
 
+.success-fireworks-pop {
+  animation: success-fireworks-pop 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.success-fireworks-glow {
+  position: absolute;
+  inset: -18% auto auto 18%;
+  z-index: 0;
+  height: 8rem;
+  width: 64%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(253, 224, 71, 0.3), rgba(253, 224, 71, 0));
+  filter: blur(18px);
+  animation: success-fireworks-glow 0.9s ease-out both;
+}
+
+.success-fireworks-ring {
+  position: absolute;
+  z-index: 0;
+  height: 5.75rem;
+  width: 5.75rem;
+  border-radius: 9999px;
+  border: 2px solid rgba(245, 158, 11, 0.26);
+  animation: success-fireworks-ring 0.9s ease-out both;
+}
+
+.success-fireworks-ring--left {
+  left: 0.9rem;
+  top: 0.9rem;
+}
+
+.success-fireworks-ring--right {
+  right: 0.9rem;
+  top: 0.9rem;
+  animation-delay: 0.08s;
+}
+
+.success-fireworks-spark {
+  position: absolute;
+  z-index: 0;
+  height: 0.95rem;
+  width: 0.95rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, white 0%, var(--spark-color) 54%, rgba(255, 255, 255, 0) 100%);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--spark-color) 55%, white);
+  animation: success-fireworks-spark 0.85s ease-out both;
+}
+
 .rabbit-hop {
   animation: rabbit-hop 0.26s cubic-bezier(0.22, 0.84, 0.28, 1);
 }
@@ -395,6 +443,66 @@ textarea {
   }
 }
 
+@keyframes success-fireworks-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.94);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(1);
+  }
+}
+
+@keyframes success-fireworks-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes success-fireworks-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.28);
+  }
+  28% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes success-fireworks-spark {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.2);
+  }
+  20% {
+    opacity: 1;
+    transform: translate3d(calc(var(--spark-x) * 0.3), calc(var(--spark-y) * 0.3), 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--spark-x), var(--spark-y), 0) scale(0.4);
+  }
+}
+
 @keyframes rabbit-hop {
   0% {
     transform: translateY(8px) scale(0.94);
@@ -570,6 +678,10 @@ textarea {
   .feedback-success-burst,
   .feedback-success-spark,
   .feedback-success-glow,
+  .success-fireworks-pop,
+  .success-fireworks-glow,
+  .success-fireworks-ring,
+  .success-fireworks-spark,
   .rabbit-hop,
   .rabbit-float,
   .carrot-bob,

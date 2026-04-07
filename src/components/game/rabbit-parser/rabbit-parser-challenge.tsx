@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/common/button";
+import { FeedbackBanner } from "@/components/common/feedback-banner";
+import { SuccessCelebration } from "@/components/common/success-celebration";
 import { ExpressionSplitter } from "@/components/game/rabbit-parser/expression-splitter";
 import { NumberLine } from "@/components/number-line/number-line";
 import {
@@ -14,7 +16,6 @@ import {
   splitByGapSelection,
 } from "@/lib/expression";
 import {
-  absRational,
   addRational,
   compareRational,
   equalsRational,
@@ -50,6 +51,11 @@ type NormalizeEntry = {
   magnitude: string;
 };
 
+type CelebrationState = {
+  id: number;
+  label: string;
+};
+
 function createEmptyNormalizeEntries(length: number): NormalizeEntry[] {
   return Array.from({ length }, () => ({
     sign: null,
@@ -61,16 +67,10 @@ function formatNormalizeEntryForAttempt(entry: NormalizeEntry) {
   return `${entry.sign ?? "?"}${entry.magnitude || "?"}`;
 }
 
-function getNormalizeEntryPreview(entry: NormalizeEntry) {
-  if (!entry.sign || !entry.magnitude) {
-    return null;
-  }
-
-  try {
-    return buildSignedTermFromInput(entry.sign, entry.magnitude);
-  } catch {
-    return null;
-  }
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 function ExpressionRibbon({
@@ -124,6 +124,8 @@ export function RabbitParserChallenge({
   );
   const [resultInput, setResultInput] = useState("");
   const [retryCount, setRetryCount] = useState(0);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [celebration, setCelebration] = useState<CelebrationState | null>(null);
   const [feedback, setFeedback] = useState<{
     tone: "info" | "success" | "warning";
     message: string;
@@ -136,6 +138,8 @@ export function RabbitParserChallenge({
   });
   const attemptMapRef = useRef<Record<string, number>>({});
   const startedAtRef = useRef(Date.now());
+  const celebrationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const celebrationNonceRef = useRef(0);
 
   const tick = parseRational(problem.suggestedTick);
   const lineMin = parseRational(problem.lineMin);
@@ -163,6 +167,14 @@ export function RabbitParserChallenge({
   useEffect(() => {
     startedAtRef.current = Date.now();
   }, [phase, moveIndex]);
+
+  useEffect(() => {
+    return () => {
+      if (celebrationTimeoutRef.current) {
+        clearTimeout(celebrationTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (phase !== "move" || !currentMoveTerm) {
@@ -208,6 +220,26 @@ export function RabbitParserChallenge({
     return next;
   }
 
+  function triggerCelebration(label: string) {
+    if (celebrationTimeoutRef.current) {
+      clearTimeout(celebrationTimeoutRef.current);
+    }
+
+    celebrationNonceRef.current += 1;
+    const nextCelebration = {
+      id: celebrationNonceRef.current,
+      label,
+    };
+
+    setCelebration(nextCelebration);
+    celebrationTimeoutRef.current = setTimeout(() => {
+      setCelebration((current) =>
+        current?.id === nextCelebration.id ? null : current,
+      );
+      celebrationTimeoutRef.current = null;
+    }, 1100);
+  }
+
   async function submitSplit() {
     const stepId = "split-expression";
     const attemptNo = nextAttempt(stepId);
@@ -235,6 +267,7 @@ export function RabbitParserChallenge({
       return;
     }
 
+    triggerCelebration("딱 맞게 끊었어요!");
     setPhase("normalize");
     setFeedback({
       tone: "success",
@@ -312,11 +345,13 @@ export function RabbitParserChallenge({
 
     setPhase("move");
     if (moveTargets.length === 0) {
+      triggerCelebration("정리가 끝났어요!");
       setFeedback({
         tone: "success",
         message: "출발 위치를 잘 찾았어요. 이제 마지막 답만 적으면 됩니다.",
       });
     } else {
+      triggerCelebration("식을 정확히 정리했어요!");
       setFeedback({
         tone: "success",
         message: "식을 잘 정리했어요! 이제 토끼를 순서대로 하나씩 점프시켜 보세요.",
@@ -359,11 +394,13 @@ export function RabbitParserChallenge({
     setMoveIndex((value) => value + 1);
 
     if (moveIndex === moveTargets.length - 1) {
+      triggerCelebration("마지막 점프까지 성공!");
       setFeedback({
         tone: "success",
         message: "마지막 점프까지 맞았어요. 이제 답을 적어 주세요.",
       });
     } else {
+      triggerCelebration("정확하게 점프했어요!");
       setFeedback({
         tone: "success",
         message: "좋아요. 다음 강조 항으로 이어서 점프해 보세요.",
@@ -372,6 +409,10 @@ export function RabbitParserChallenge({
   }
 
   async function submitResult() {
+    if (isCompleting) {
+      return;
+    }
+
     const stepId = "submit-final";
     const attemptNo = nextAttempt(stepId);
     const responseTimeMs = Date.now() - startedAtRef.current;
@@ -401,10 +442,13 @@ export function RabbitParserChallenge({
       return;
     }
 
+    setIsCompleting(true);
+    triggerCelebration("정답!");
     setFeedback({
       tone: "success",
       message: "정답입니다. 다음 문제로 넘어갑니다.",
     });
+    await wait(900);
     onComplete({ retriesUsed: retryCount });
   }
 
@@ -453,19 +497,17 @@ export function RabbitParserChallenge({
   }
 
   return (
-    <div className="grid gap-4">
-      {feedback.message && (
-        <div
-          className={`rounded-[1.5rem] p-4 text-center text-sm font-bold shadow-sm transition-all animate-in fade-in slide-in-from-top-2 ${
-            feedback.tone === "info"
-              ? "bg-blue-50 text-blue-700 border border-blue-200"
-              : feedback.tone === "success"
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                : "bg-red-50 text-red-700 border border-red-200"
-          }`}
-        >
-          {feedback.message}
+    <div className="relative grid gap-4">
+      {celebration ? (
+        <div className="pointer-events-none absolute inset-x-0 top-[4.25rem] z-20 flex justify-center px-2 sm:px-6">
+          <div className="w-full max-w-2xl">
+            <SuccessCelebration id={celebration.id} label={celebration.label} />
+          </div>
         </div>
+      ) : null}
+
+      {feedback.message && (
+        <FeedbackBanner tone={feedback.tone} message={feedback.message} />
       )}
 
       <div className="grid gap-3 sm:grid-cols-4">
@@ -549,53 +591,52 @@ export function RabbitParserChallenge({
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {problem.rawSplit.map((segment, index) => {
               const entry = normalizeEntries[index];
-              const previewTerm = entry ? getNormalizeEntryPreview(entry) : null;
 
               return (
                 <div
                   key={segment}
                   className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
                 >
-                <p className="text-2xl font-black text-[var(--ink-strong)]">{segment}</p>
-                <div className="mt-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                    부호
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    {(["+", "-"] as const).map((sign) => {
-                      const isActive = entry?.sign === sign;
+                  <p className="text-2xl font-black text-[var(--ink-strong)]">{segment}</p>
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                      부호
+                    </p>
+                    <div className="mt-2 flex gap-2">
+                      {(["+", "-"] as const).map((sign) => {
+                        const isActive = entry?.sign === sign;
 
-                      return (
-                        <button
-                          key={sign}
-                          type="button"
-                          aria-pressed={isActive}
-                          onClick={() => updateNormalizeEntrySign(index, sign)}
-                          className={`min-w-14 rounded-[1rem] border px-4 py-3 text-lg font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
-                            isActive
-                              ? "border-amber-300 bg-amber-100 text-amber-950"
-                              : "border-[var(--line)] bg-white text-[var(--ink-strong)] hover:border-amber-200 hover:bg-amber-50"
-                          }`}
-                        >
-                          {sign}
-                        </button>
-                      );
-                    })}
+                        return (
+                          <button
+                            key={sign}
+                            type="button"
+                            aria-pressed={isActive}
+                            onClick={() => updateNormalizeEntrySign(index, sign)}
+                            className={`min-w-14 rounded-[1rem] border px-4 py-3 text-lg font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                              isActive
+                                ? "border-amber-300 bg-amber-100 text-amber-950"
+                                : "border-[var(--line)] bg-white text-[var(--ink-strong)] hover:border-amber-200 hover:bg-amber-50"
+                            }`}
+                          >
+                            {sign}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                    숫자
+                  </p>
+                  <input
+                    value={entry?.magnitude ?? ""}
+                    onChange={(event) =>
+                      updateNormalizeEntryMagnitude(index, event.target.value)
+                    }
+                    className="field mt-4"
+                    inputMode="text"
+                    placeholder="예: 4, 2/3, 1.5"
+                  />
                 </div>
-                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                  숫자
-                </p>
-                <input
-                  value={entry?.magnitude ?? ""}
-                  onChange={(event) =>
-                    updateNormalizeEntryMagnitude(index, event.target.value)
-                  }
-                  className="field mt-4"
-                  inputMode="text"
-                  placeholder="예: 4, 2/3, 1.5"
-                />
-              </div>
               );
             })}
           </div>
@@ -692,6 +733,7 @@ export function RabbitParserChallenge({
               <input
                 value={resultInput}
                 onChange={(event) => setResultInput(event.target.value)}
+                disabled={isCompleting}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -701,8 +743,13 @@ export function RabbitParserChallenge({
                 className="field mt-5 text-lg"
                 placeholder="예: 9"
               />
-              <Button className="mt-4 py-4 text-base" block onClick={submitResult}>
-                답 제출
+              <Button
+                className="mt-4 py-4 text-base"
+                block
+                disabled={isCompleting}
+                onClick={submitResult}
+              >
+                {isCompleting ? "다음 문제로 이동 중..." : "답 제출"}
               </Button>
             </>
           )}
