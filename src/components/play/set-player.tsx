@@ -155,18 +155,18 @@ export function SetPlayer({
     <section className="grid gap-6">
       <div className="rounded-[2.5rem] border-4 border-white bg-gradient-to-b from-blue-50 to-indigo-50 p-6 shadow-xl md:p-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        <div className="relative flex flex-wrap items-start justify-between gap-4">
-          <div>
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 flex-1">
             <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-bold text-indigo-700 shadow-sm mb-3">
               <span>🎯</span>
               <span>문제 {problemIndex + 1} / {problems.length}</span>
             </div>
-            <h1 className="font-[var(--font-display)] text-[3.5rem] font-bold leading-none tracking-[-0.04em] text-[var(--ink-strong)] md:text-[4.5rem] drop-shadow-sm">
-              <MathText text={problem.expression} />
+            <h1 className="max-w-full font-[var(--font-display)] text-[clamp(2rem,9vw,4.5rem)] font-bold leading-[0.92] tracking-[-0.05em] text-[var(--ink-strong)] drop-shadow-sm">
+              <MathText text={problem.expression} className="max-w-full" />
             </h1>
           </div>
           {isFinishing && (
-            <div className="animate-pulse rounded-full bg-[var(--sun)] px-5 py-2.5 text-sm font-bold text-white shadow-md">
+            <div className="animate-pulse self-start rounded-full bg-[var(--sun)] px-5 py-2.5 text-sm font-bold text-white shadow-md">
               결과 저장 중 🚀
             </div>
           )}

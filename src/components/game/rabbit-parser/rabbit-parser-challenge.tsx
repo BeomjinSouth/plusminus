@@ -94,21 +94,21 @@ function ExpressionRibbon({
   activeIndex?: number;
 }) {
   return (
-    <div className="rounded-[1.55rem] border border-[var(--line)] bg-white/95 p-6 shadow-sm">
+    <div className="rounded-[1.55rem] border border-[var(--line)] bg-white/95 p-4 shadow-sm sm:p-6">
       <p className="text-center text-sm font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
         최종 식
       </p>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:mt-5 sm:gap-3">
         {segments.map((segment, index) => (
           <span
             key={`${segment}-${index}`}
-            className={`rounded-[1.2rem] border-2 px-4 py-3 font-mono text-xl sm:text-2xl md:text-3xl font-black transition-all ${
+            className={`max-w-full rounded-[1.2rem] border-2 px-3 py-2 font-mono text-lg font-black transition-all sm:px-4 sm:py-3 sm:text-2xl md:text-3xl ${
               activeIndex === index
-                ? "border-amber-400 bg-amber-100 text-amber-950 shadow-[0_8px_16px_rgba(245,158,11,0.2)] scale-110 z-10"
+                ? "z-10 border-amber-400 bg-amber-100 text-amber-950 shadow-[0_8px_16px_rgba(245,158,11,0.2)] sm:scale-110"
                 : "border-[var(--line)] bg-white text-[var(--ink-strong)]"
             }`}
           >
-            <MathText text={segment} />
+            <MathText text={segment} className="max-w-full" />
           </span>
         ))}
       </div>
@@ -631,8 +631,8 @@ export function RabbitParserChallenge({
                     key={segment}
                     className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
                   >
-                    <p className="text-2xl font-black text-[var(--ink-strong)]">
-                      <MathText text={segment} />
+                    <p className="text-xl font-black text-[var(--ink-strong)] sm:text-2xl">
+                      <MathText text={segment} className="max-w-full" />
                     </p>
                     <div className="mt-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
