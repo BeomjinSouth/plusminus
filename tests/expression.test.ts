@@ -36,9 +36,9 @@ describe("expression helpers", () => {
   });
 
   it("builds the normalized final expression for rabbit steps", () => {
-    expect(buildFinalExpression(["-4", "-3"])).toBe("-4+(-3)");
+    expect(buildFinalExpression(["-4", "-3"])).toBe("-4-3");
     expect(buildFinalExpression(["+2/3", "+5/6", "-1/2"])).toBe(
-      "2/3+5/6+(-1/2)",
+      "2/3+5/6-1/2",
     );
   });
 

@@ -96,7 +96,7 @@ export function getFinalExpressionSegments(terms: string[]) {
     }
 
     if (formatted.startsWith("-")) {
-      return `+(${formatted})`;
+      return formatted;
     }
 
     return `+${formatted.replace(/^\+/, "")}`;
