@@ -80,6 +80,12 @@ export type SetResult = {
   completedAt: string;
 };
 
+export type PendingProgressFlush = {
+  sessionId: string;
+  events: AttemptEvent[];
+  setResult: SetResult;
+};
+
 export type ChallengeAttempt = {
   stepId: string;
   attemptNo: number;

@@ -5,7 +5,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MathText } from "@/components/common/math-text";
 import { RabbitParserChallenge } from "@/components/game/rabbit-parser/rabbit-parser-challenge";
-import { finalizeProgress, flushAttemptQueue, flushAttemptQueueWithBeacon, queueAttemptEvent } from "@/lib/logging/client-logger";
+import {
+  flushPendingProgress,
+  flushAttemptQueue,
+  flushAttemptQueueWithBeacon,
+  queueAttemptEvent,
+  stagePendingProgressFlush,
+} from "@/lib/logging/client-logger";
 import { saveLatestResult } from "@/lib/storage";
 import type {
   AttemptEvent,
@@ -52,7 +58,15 @@ export function SetPlayer({
   }, [isFinishing]);
 
   useEffect(() => {
-    void flushAttemptQueue(session.sessionId);
+    void (async () => {
+      const didFlushPending = await flushPendingProgress();
+
+      if (!didFlushPending) {
+        return;
+      }
+
+      await flushAttemptQueue(session.sessionId);
+    })();
   }, [session.sessionId]);
 
   useEffect(() => {
@@ -146,33 +160,35 @@ export function SetPlayer({
     };
 
     setIsFinishing(true);
-    await finalizeProgress(session.sessionId, setResult);
     saveLatestResult(setResult);
+    stagePendingProgressFlush(session.sessionId, setResult);
     router.push(`/result/${model}/${difficulty}`);
   }
 
   return (
     <section className="grid gap-6">
-      <div className="rounded-[2.5rem] border-4 border-white bg-gradient-to-b from-blue-50 to-indigo-50 p-6 shadow-xl md:p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+      <div className="relative overflow-hidden rounded-[2.5rem] border-4 border-white bg-gradient-to-b from-blue-50 to-indigo-50 p-6 shadow-xl md:p-8">
+        <div className="absolute top-0 right-0 h-64 w-64 translate-x-1/3 -translate-y-1/2 rounded-full bg-white/40 blur-3xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
-            <div className="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-bold text-indigo-700 shadow-sm mb-3">
-              <span>🎯</span>
-              <span>문제 {problemIndex + 1} / {problems.length}</span>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-bold text-indigo-700 shadow-sm">
+              <span>Problem</span>
+              <span>
+                {problemIndex + 1} / {problems.length}
+              </span>
             </div>
             <h1 className="max-w-full font-[var(--font-display)] text-[clamp(2rem,9vw,4.5rem)] font-bold leading-[0.92] tracking-[-0.05em] text-[var(--ink-strong)] drop-shadow-sm">
               <MathText text={problem.expression} className="max-w-full" />
             </h1>
           </div>
-          {isFinishing && (
+          {isFinishing ? (
             <div className="animate-pulse self-start rounded-full bg-[var(--sun)] px-5 py-2.5 text-sm font-bold text-white shadow-md">
-              결과 저장 중 🚀
+              Saving result...
             </div>
-          )}
+          ) : null}
         </div>
 
-        <div className="mt-6 h-4 w-full overflow-hidden rounded-full bg-white/80 shadow-inner border border-indigo-100 p-1">
+        <div className="mt-6 h-4 w-full overflow-hidden rounded-full border border-indigo-100 bg-white/80 p-1 shadow-inner">
           <div
             className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 shadow-sm transition-all duration-500 ease-out"
             style={{ width: `${progressPercent}%` }}

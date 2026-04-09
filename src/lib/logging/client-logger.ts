@@ -1,5 +1,11 @@
-import { loadAttemptQueue, saveAttemptQueue } from "@/lib/storage";
-import type { AttemptEvent, SetResult } from "@/lib/types";
+import {
+  clearPendingProgressFlush,
+  loadAttemptQueue,
+  loadPendingProgressFlush,
+  saveAttemptQueue,
+  savePendingProgressFlush,
+} from "@/lib/storage";
+import type { AttemptEvent, PendingProgressFlush, SetResult } from "@/lib/types";
 
 export async function queueAttemptEvent(event: AttemptEvent) {
   const queue = loadAttemptQueue<AttemptEvent>();
@@ -65,25 +71,76 @@ export function flushAttemptQueueWithBeacon(sessionId: string) {
   return didQueue;
 }
 
-export async function finalizeProgress(sessionId: string, setResult: SetResult) {
-  const queue = loadAttemptQueue<AttemptEvent>();
+function buildPendingProgressFlush(
+  sessionId: string,
+  setResult: SetResult,
+): PendingProgressFlush {
+  return {
+    sessionId,
+    events: loadAttemptQueue<AttemptEvent>(),
+    setResult,
+  };
+}
 
-  const response = await fetch("/api/progress/flush", {
+async function postPendingProgressFlush(payload: PendingProgressFlush) {
+  return fetch("/api/progress/flush", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      sessionId,
-      events: queue,
-      setResult,
-    }),
+    body: JSON.stringify(payload),
   });
+}
+
+function completePendingProgressFlush() {
+  saveAttemptQueue<AttemptEvent>([]);
+  clearPendingProgressFlush();
+}
+
+export function stagePendingProgressFlush(sessionId: string, setResult: SetResult) {
+  const payload = buildPendingProgressFlush(sessionId, setResult);
+  savePendingProgressFlush(payload);
+  return payload;
+}
+
+export async function flushPendingProgress() {
+  const payload = loadPendingProgressFlush();
+
+  if (!payload) {
+    return true;
+  }
+
+  const response = await postPendingProgressFlush(payload);
 
   if (!response.ok) {
     return false;
   }
 
-  saveAttemptQueue<AttemptEvent>([]);
+  completePendingProgressFlush();
   return true;
+}
+
+export function flushPendingProgressWithBeacon() {
+  if (typeof navigator === "undefined" || typeof navigator.sendBeacon !== "function") {
+    return false;
+  }
+
+  const payload = loadPendingProgressFlush();
+
+  if (!payload) {
+    return true;
+  }
+
+  const didQueue = navigator.sendBeacon("/api/progress/flush", buildJsonBlob(payload));
+
+  if (didQueue) {
+    completePendingProgressFlush();
+  }
+
+  return didQueue;
+}
+
+export async function finalizeProgress(sessionId: string, setResult: SetResult) {
+  stagePendingProgressFlush(sessionId, setResult);
+  return flushPendingProgress();
 }

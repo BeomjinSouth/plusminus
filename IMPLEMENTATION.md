@@ -208,3 +208,8 @@ type Problem = {
 - 분수 표시는 계산 로직과 분리된 공통 UI 렌더러에서 처리한다.
 - `\d+/\d+` 형태의 유리수 문자열은 부호를 유지한 채 분자/분모를 세로 적층해서 렌더링한다.
 - 적용 범위는 문제 헤더, 식 자르기 토큰, 부호 정리 카드, 최종 식 리본, 수직선 눈금이다.
+
+## 15. 2026-04-09 Note
+
+- `SetPlayer` 는 마지막 문제 완료 시 `plusminus:pending-progress-flush` 에 pending payload 를 저장한 뒤 결과 페이지로 즉시 이동한다.
+- `result/[model]/[difficulty]` 는 마운트 후 pending flush 를 비동기로 실행하고, 페이지 이탈 시에는 beacon 으로 한 번 더 전송을 시도한다.

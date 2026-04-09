@@ -1,8 +1,9 @@
-import type { SessionState, SetResult } from "@/lib/types";
+import type { PendingProgressFlush, SessionState, SetResult } from "@/lib/types";
 
 const SESSION_KEY = "plusminus:session";
 const RESULT_KEY = "plusminus:latest-result";
 const ATTEMPT_QUEUE_KEY = "plusminus:attempt-queue";
+const PENDING_PROGRESS_FLUSH_KEY = "plusminus:pending-progress-flush";
 
 function readStorage<T>(key: string): T | null {
   if (typeof window === "undefined") {
@@ -59,4 +60,20 @@ export function loadAttemptQueue<T>() {
 
 export function saveAttemptQueue<T>(value: T[]) {
   writeStorage(ATTEMPT_QUEUE_KEY, value);
+}
+
+export function loadPendingProgressFlush() {
+  return readStorage<PendingProgressFlush>(PENDING_PROGRESS_FLUSH_KEY);
+}
+
+export function savePendingProgressFlush(value: PendingProgressFlush) {
+  writeStorage(PENDING_PROGRESS_FLUSH_KEY, value);
+}
+
+export function clearPendingProgressFlush() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(PENDING_PROGRESS_FLUSH_KEY);
 }
