@@ -213,3 +213,8 @@ type Problem = {
 
 - `SetPlayer` 는 마지막 문제 완료 시 `plusminus:pending-progress-flush` 에 pending payload 를 저장한 뒤 결과 페이지로 즉시 이동한다.
 - `result/[model]/[difficulty]` 는 마운트 후 pending flush 를 비동기로 실행하고, 페이지 이탈 시에는 beacon 으로 한 번 더 전송을 시도한다.
+
+## 16. 2026-04-11 Note
+
+- Google Sheets 헤더 존재 여부를 확인할 때는 `sessions!A1:G1` 같은 명시적 A1 범위를 사용한다.
+- `sessions!1:1` 같은 행-only 표기는 Google Sheets API 에서 파싱 오류를 일으켜 학생 입장(`/api/session/start`)을 막을 수 있으므로 사용하지 않는다.

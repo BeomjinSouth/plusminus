@@ -2,6 +2,8 @@ import "server-only";
 
 import { google } from "googleapis";
 
+import { buildHeaderRange } from "@/lib/sheets/a1-range";
+
 const SHEET_NAMES = {
   sessions: "sessions",
   attempts: "attempt_events",
@@ -97,7 +99,7 @@ async function ensureSheetReady(
   if (options?.headers && options.headers.length > 0) {
     const headerRow = await sheets.client.spreadsheets.values.get({
       spreadsheetId: sheets.spreadsheetId,
-      range: `${sheetName}!1:1`,
+      range: buildHeaderRange(sheetName, options.headers.length),
     });
 
     const hasHeaderValues =
