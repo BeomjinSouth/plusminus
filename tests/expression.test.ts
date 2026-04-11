@@ -5,6 +5,7 @@ import {
   buildFinalExpression,
   matchesNormalizedFinalExpression,
   normalizeUnsignedRationalInput,
+  resolveNormalizeEntrySign,
   parseSignedSegment,
   splitExpressionIntoTerms,
   tokenizeExpressionForSplitView,
@@ -95,5 +96,13 @@ describe("expression helpers", () => {
     expect(normalizeUnsignedRationalInput("-2/3")).toBe("2/3");
     expect(buildSignedTermFromInput("+", "2.50")).toBe("+5/2");
     expect(buildSignedTermFromInput("-", "-3/4")).toBe("-3/4");
+  });
+
+  it("auto-selects the normalize sign from typed numeric input", () => {
+    expect(resolveNormalizeEntrySign("")).toBeNull();
+    expect(resolveNormalizeEntrySign("3")).toBe("+");
+    expect(resolveNormalizeEntrySign("+3")).toBe("+");
+    expect(resolveNormalizeEntrySign("-3")).toBe("-");
+    expect(resolveNormalizeEntrySign("  -2/3 ")).toBe("-");
   });
 });

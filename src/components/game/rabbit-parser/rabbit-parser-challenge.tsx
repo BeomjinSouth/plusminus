@@ -14,6 +14,8 @@ import {
   getFinalExpressionSegments,
   matchesNormalizedFinalExpression,
   normalizeSegmentList,
+  normalizeUnsignedRationalInput,
+  resolveNormalizeEntrySign,
   splitByGapSelection,
 } from "@/lib/expression";
 import {
@@ -65,7 +67,13 @@ function createEmptyNormalizeEntries(length: number): NormalizeEntry[] {
 }
 
 function formatNormalizeEntryForAttempt(entry: NormalizeEntry) {
-  return `${entry.sign ?? "?"}${entry.magnitude || "?"}`;
+  const magnitude = normalizeUnsignedRationalInput(entry.magnitude);
+
+  if (entry.sign && magnitude) {
+    return `${entry.sign}${magnitude}`;
+  }
+
+  return `${entry.sign ?? "?"}${magnitude || "?"}`;
 }
 
 function getNormalizeEntryPreview(entry: NormalizeEntry) {
@@ -495,14 +503,15 @@ export function RabbitParserChallenge({
       value.map((entry, entryIndex) => {
         if (entryIndex !== index) return entry;
 
-        let newText = entry.magnitude || "";
-        if (newText.startsWith("+") || newText.startsWith("-")) {
-          newText = sign + newText.slice(1);
-        } else {
-          newText = sign + newText;
-        }
+        const normalizedMagnitude = normalizeUnsignedRationalInput(entry.magnitude);
+        const nextMagnitude =
+          normalizedMagnitude.length === 0
+            ? entry.magnitude
+            : sign === "-"
+              ? `-${normalizedMagnitude}`
+              : normalizedMagnitude;
 
-        return { ...entry, sign, magnitude: newText };
+        return { ...entry, sign, magnitude: nextMagnitude };
       }),
     );
   }
@@ -512,9 +521,7 @@ export function RabbitParserChallenge({
       value.map((entry, entryIndex) => {
         if (entryIndex !== index) return entry;
 
-        let newSign = entry.sign;
-        if (rawValue.startsWith("+")) newSign = "+";
-        if (rawValue.startsWith("-")) newSign = "-";
+        const newSign = resolveNormalizeEntrySign(rawValue);
 
         return { ...entry, magnitude: rawValue, sign: newSign };
       }),
@@ -608,7 +615,7 @@ export function RabbitParserChallenge({
       )}
 
       {phase === "normalize" && (
-        <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-indigo-50 to-purple-50 p-6 shadow-xl md:p-8">
+        <section className="rounded-[2.5rem] border-4 border-white bg-gradient-to-br from-indigo-50 to-purple-50 p-6 text-center shadow-xl md:p-8">
           <p className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-black uppercase tracking-widest text-indigo-700">
             STEP 2 🔧
           </p>
@@ -629,16 +636,16 @@ export function RabbitParserChallenge({
                 return (
                   <div
                     key={segment}
-                    className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4"
+                    className="rounded-[1.5rem] border border-[var(--line)] bg-white/90 p-4 text-center"
                   >
                     <p className="text-xl font-black text-[var(--ink-strong)] sm:text-2xl">
-                      <MathText text={segment} className="max-w-full" />
+                      <MathText text={segment} className="max-w-full justify-center" />
                     </p>
                     <div className="mt-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
                         부호
                       </p>
-                      <div className="mt-2 flex gap-2">
+                      <div className="mt-2 flex justify-center gap-2">
                         {(["+", "-"] as const).map((sign) => {
                           const isActive = entry?.sign === sign;
 
@@ -668,14 +675,15 @@ export function RabbitParserChallenge({
                       onChange={(event) =>
                         updateNormalizeEntryMagnitude(index, event.target.value)
                       }
-                      className="field mt-4"
+                      className="field mx-auto mt-4 max-w-sm text-center text-lg font-bold"
                       inputMode="text"
-                      placeholder="예: 4, 2/3, 1.5"
+                      placeholder="예: -3, 2/3, +1.5"
                     />
                     <p className="mt-3 text-sm font-semibold text-[var(--ink-soft)]">
                       {previewTerm ? (
                         <>
-                          읽힌 항: <MathText text={previewTerm} />
+                          읽힌 항:{" "}
+                          <MathText text={previewTerm} className="justify-center" />
                         </>
                       ) : "부호와 숫자를 고르면 읽힌 항이 보여요."}
                     </p>
@@ -684,12 +692,12 @@ export function RabbitParserChallenge({
               })}
             </div>
 
-            <div className="mt-4 rounded-[1.6rem] border border-[var(--line)] bg-white/92 p-4">
+            <div className="mt-4 rounded-[1.6rem] border border-[var(--line)] bg-white/92 p-4 text-center">
               <p className="text-sm font-semibold text-[var(--ink-soft)]">최종 식</p>
               <input
                 value={finalExpressionInput}
                 onChange={(event) => setFinalExpressionInput(event.target.value)}
-                className="field mt-3"
+                className="field mx-auto mt-3 max-w-2xl text-center text-lg font-bold"
                 placeholder="부호를 정리한 식을 적어 보세요."
               />
               <p className="mt-3 text-sm font-medium text-[var(--ink-soft)]">

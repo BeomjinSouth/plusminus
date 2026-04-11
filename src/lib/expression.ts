@@ -320,6 +320,20 @@ export function normalizeUnsignedRationalInput(input: string) {
   return normalized;
 }
 
+export function resolveNormalizeEntrySign(input: string): "+" | "-" | null {
+  const normalized = normalizeMathText(input);
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.startsWith("-")) {
+    return "-";
+  }
+
+  return "+";
+}
+
 export function buildSignedTermFromInput(
   sign: "+" | "-",
   magnitudeInput: string,

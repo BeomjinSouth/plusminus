@@ -118,13 +118,16 @@ export function NumberLine({
   const ticks = buildTicks(min, max, tick);
   const stride = Math.max(1, Math.ceil(ticks.length / 10));
   const zero = { numerator: 0, denominator: 1 };
+  const minColumnWidth = 72;
+  const minGridWidth = Math.max(760, ticks.length * minColumnWidth);
 
   return (
     <div className="overflow-x-auto rounded-[1.7rem] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,237,225,0.96))] px-3 pb-2 pt-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
       <div
-        className="grid min-w-[760px] items-end gap-0"
+        className="grid items-end gap-0"
         style={{
-          gridTemplateColumns: `repeat(${ticks.length}, minmax(44px, 1fr))`,
+          gridTemplateColumns: `repeat(${ticks.length}, minmax(${minColumnWidth}px, 1fr))`,
+          minWidth: `${minGridWidth}px`,
         }}
       >
         {ticks.map((value, index) => {
@@ -166,7 +169,7 @@ export function NumberLine({
               <div className="absolute bottom-[2.45rem] left-0 h-[0.18rem] w-full bg-[rgba(47,124,121,0.18)]" />
               <div
                 className={cn(
-                  "mt-2 min-h-10 text-xs font-medium text-[var(--ink-soft)]",
+                  "mt-3 min-h-16 text-2xl leading-none font-black tracking-[-0.03em] text-[var(--ink-soft)]",
                   showLabel ? "opacity-100" : "opacity-20",
                 )}
               >
